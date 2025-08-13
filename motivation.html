@@ -59,7 +59,7 @@ const celebrationSound = document.getElementById('celebrationSound');
 const dingSound = document.getElementById('dingSound');
 
 const taskSelect = document.getElementById('taskSelect');
-const preRewards = ["Snack", "Break", "Watch a short video", "Coffee", "Song", "Stretch"];
+const preRewards = ["Snack", "Youtube", "Social media scroll ", "Drink", "Song", "Stretch"];
 const bigRewards = ["Watch an episode", "Go for a walk", "Listen to an album", "Dance", "Relax on the couch", "Eat something yum"];
 
 // Task templates
@@ -89,17 +89,17 @@ const taskTemplates = {
   writeEssay: [
     {type:'task', text:'Outline essay'},
     {type:'reward', text:'Coffee break'},
-    {type:'task', text:'Write first draft'},
+    {type:'task', text:'Write introduction'},
     {type:'reward', text:'Short video'},
-    {type:'task', text:'Edit draft'},
+    {type:'task', text:'writr first paragraph'},
     {type:'special', text:''}
   ],
   laundry: [
     {type:'task', text:'Sort clothes'},
     {type:'reward', text:'Snack'},
-    {type:'task', text:'Load washer'},
+    {type:'task', text:'Load washing machine'},
     {type:'reward', text:'Stretch'},
-    {type:'task', text:'Fold laundry'},
+    {type:'task', text:'Hang wet clothes'},
     {type:'special', text:''}
   ]
 };
@@ -216,16 +216,69 @@ function renderChecklist(){
     checklistEl.appendChild(li);
   });
 }
+// Handle task title change and load steps/rewards
+document.getElementById("taskTitle").addEventListener("change", function () {
+    const selectedTask = this.value;
+    const taskListContainer = document.getElementById("taskList");
+    taskListContainer.innerHTML = ""; // Clear old list
 
-// Handle task selection dropdown
-taskSelect.addEventListener('change', ()=>{
-  if(taskSelect.value==='custom'){
-    const customTask = prompt("Enter custom overall task name:");
-    items = [];
-  } else {
-    items = JSON.parse(JSON.stringify(taskTemplates[taskSelect.value]));
-  }
-  renderChecklist();
+    let steps = [];
+    let rewards = [];
+
+    if (selectedTask === "Empty Dishwasher") {
+        steps = [
+            "Put cutlery away",
+            "Put plates away",
+            "Put bowls away",
+            "Put cups/glasses away",
+            "Put mugs away",
+            "Put remaining dishes away"
+        ];
+        rewards = [
+            "Listen to a song",
+            "Watch a short YouTube video",
+            "3 minute social media scroll",
+            "", // user chooses from dropdown
+            "", // user chooses from dropdown
+            ""  // user chooses from dropdown
+        ];
+    } 
+    else if (selectedTask === "Clean Bathroom") {
+        steps = [
+            "Wipe down sink",
+            "Scrub toilet",
+            "Clean shower/bath",
+            "Mop floor"
+        ];
+        rewards = [
+            "Drink a glass of water",
+            "Stretch",
+            "Listen to music",
+            "" // user chooses from dropdown
+        ];
+    } 
+    else if (selectedTask === "Custom Task") {
+        const customTitle = prompt("Enter your custom task title:");
+        if (customTitle) {
+            this.options[this.selectedIndex].text = customTitle; // Update dropdown display
+        }
+        // Start with an empty list so the user can add their own
+        steps = [];
+        rewards = [];
+    }
+
+    // Build checklist
+    steps.forEach((step, index) => {
+        addStepWithReward(step, rewards[index] || "");
+    });
+
+    // Add final reward section
+    const finalText = document.createElement("h3");
+    finalText.textContent = "Task completed! GO YOU!!";
+    finalText.style.textAlign = "center";
+    taskListContainer.appendChild(finalText);
+
+    addFinalReward();
 });
 
 // Add custom step before final special reward
