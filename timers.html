@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Timers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Winky+Sans&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barriecito&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Winky Sans', Arial, sans-serif;
+      background: #FFF5E1;
+      color: #333;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    h1 {
+      font-family: 'Barriecito', cursive;
+      font-size: 4rem;
+      color: #E75480;
+      margin-bottom: 1rem;
+    }
+    p.description {
+      color: #145214;
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      max-width: 600px;
+    }
+    .timer-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    button.timer-btn {
+      background: #4a7c40;
+      color: #145214;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      padding: 1rem 2rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      flex: 1 1 120px;
+      max-width: 140px;
+    }
+    button.timer-btn:hover {
+      background: #2e451d;
+      color: #a2d5a0;
+    }
+    #countdown {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #E75480;
+      min-height: 50px;
+      margin-bottom: 2rem;
+    }
+    a.button {
+      background: #4a7c40;
+      color: #145214;
+      font-weight: bold;
+      text-decoration: none;
+      padding: 1.2rem 2.5rem;
+      border-radius: 8px;
+      font-size: 1.4rem;
+      transition: background 0.3s ease;
+      display: inline-block;
+      margin-top: auto;
+      margin-bottom: 1rem;
+    }
+    a.button:hover {
+      background: #2e451d;
+      color: #a2d5a0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Timers</h1>
+  <p class="description">Choose a timer to help you focus. You’ll get an alert when time is up!</p>
+
+  <div class="timer-buttons">
+    <button class="timer-btn" data-minutes="2">2 Minutes</button>
+    <button class="timer-btn" data-minutes="5">5 Minutes</button>
+    <button class="timer-btn" data-minutes="10">10 Minutes</button>
+    <button class="timer-btn" data-minutes="15">15 Minutes</button>
+    <button class="timer-btn" data-minutes="25">25 Minutes</button>
+  </div>
+
+  <div id="countdown"></div>
+
+  <a href="index.html" class="button">Back to Home</a>
+
+  <script>
+    const buttons = document.querySelectorAll('.timer-btn');
+    const countdownEl = document.getElementById('countdown');
+    let countdownInterval;
+
+    function startTimer(minutes) {
+      clearInterval(countdownInterval);
+      let timeLeft = minutes * 60; // seconds
+
+      updateCountdown(timeLeft);
+      countdownInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft < 0) {
+          clearInterval(countdownInterval);
+          countdownEl.textContent = "Time's up!";
+          alert("⏰ Time's up!");
+          return;
+        }
+        updateCountdown(timeLeft);
+      }, 1000);
+    }
+
+    function updateCountdown(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      countdownEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const minutes = parseInt(button.getAttribute('data-minutes'), 10);
+        startTimer(minutes);
+      });
+    });
+  </script>
+</body>
+</html>
