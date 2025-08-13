@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motivation Tool</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Barriecito&family=Winky+Sans&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Winky Sans', sans-serif;
+      background-color: #fdf6e3;
+      color: #1b3a2d;
+      padding: 20px;
+    }
+    h1 {
+      font-family: 'Barriecito', cursive;
+      font-size: 3rem;
+      color: #ff9aa2;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    label {
+      margin-left: 8px;
+    }
+    ul { list-style: none; padding: 0; }
+    li {
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .reward {
+      margin-left: 30px;
+      font-weight: bold;
+    }
+    input[type="text"], select {
+      margin-left: 10px;
+    }
+    .special-reward {
+      color: #ff6f61;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+    .btn { 
+      background-color: #ff9aa2; 
+      color: #fdf6e3; 
+      border: none; 
+      padding: 10px 15px; 
+      cursor: pointer; 
+      margin-top: 10px; 
+      font-family: 'Barriecito', cursive;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Motivation Tool</h1>
+
+  <label>Overall Task Name: 
+    <input type="text" id="taskName" placeholder="Name your big task">
+  </label>
+
+  <ul id="motivationChecklist"></ul>
+
+  <button id="addTaskBtn" class="btn">Add Custom Task</button>
+  <button id="addRewardBtn" class="btn">Add Custom Reward</button>
+  <br>
+  <button onclick="window.location.href='index.html'" class="btn">Back to Home</button>
+
+  <!-- Sounds -->
+  <audio id="celebrationSound" src="celebration.mp3"></audio>
+  <audio id="dingSound" src="ding.mp3"></audio>
+
+  <script>
+    const checklistEl = document.getElementById('motivationChecklist');
+    const celebrationSound = document.getElementById('celebrationSound');
+    const dingSound = document.getElementById('dingSound');
+
+    // Pre-filled tasks & rewards
+    const preTasks = ["Clean kitchen", "Clean bathroom", "Write essay", "Do laundry"];
+    const preRewards = ["Snack", "Break", "Watch a short video", "Coffee"];
+
+    let items = [];
+
+    // Load saved from localStorage
+    if(localStorage.getItem('motivationItems')){
+      items = JSON.parse(localStorage.getItem('motivationItems'));
+    } else {
+      // Initialize with pre-filled tasks & rewards alternated
+      preTasks.forEach((task, i) => {
+        items.push({type: 'task', text: task, checked: false});
+        items.push({type: 'reward', text: preRewards[i] || "Reward", checked: false});
+      });
+      items.push({type: 'reward', text: "Special reward!", checked: false, special:true});
+    }
+
+    function renderChecklist(){
+      checklistEl.innerHTML = '';
+      items.forEach((item, index) => {
+        const li = document.createElement('li');
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = item.checked;
+
+        if(item.type==='task'){
+          checkbox.addEventListener('change', () => {
+            item.checked = checkbox.checked;
+            localStorage.setItem('motivationItems', JSON.stringify(items));
+            if(checkbox.checked){
+              celebrationSound.currentTime = 0;
+              celebrationSound.play().catch(err=>console.log(err));
+            }
+          });
+          li.appendChild(checkbox);
+          li.appendChild(document.createTextNode(' ' + item.text));
+
+        } else if(item.type==='reward'){
+          const select = document.createElement('select');
+          preRewards.forEach(r => {
+            const option = document.createElement('option');
+            option.value = r;
+            option.textContent = r;
+            if(r===item.text) option.selected=true;
+            select.appendChild(option);
+          });
+          const customOption = document.createElement('option');
+          customOption.value = 'custom';
+          customOption.textContent = 'Custom...';
+          select.appendChild(customOption);
+
+          const input = document.createElement('input');
+          input.type='text';
+          input.placeholder='Enter custom reward';
+          input.style.display = (preRewards.includes(item.text)?'none':'inline');
+          input.value = (!preRewards.includes(item.text)?item.text:'');
+
+          select.addEventListener('change', ()=>{
+            if(select.value==='custom'){
+              input.style.display='inline';
+              item.text = input.value;
+            } else {
+              input.style.display='none';
+              item.text = select.value;
+            }
+            localStorage.setItem('motivationItems', JSON.stringify(items));
+            if(checkbox.checked){
+              dingSound.currentTime = 0;
+              dingSound.play().catch(err=>console.log(err));
+            }
+          });
+
+          input.addEventListener('input', ()=>{
+            item.text = input.value;
+            localStorage.setItem('motivationItems', JSON.stringify(items));
+          });
+
+          checkbox.addEventListener('change', ()=>{
+            item.checked = checkbox.checked;
+            localStorage.setItem('motivationItems', JSON.stringify(items));
+            if(checkbox.checked){
+              dingSound.currentTime = 0;
+              dingSound.play().catch(err=>console.log(err));
+            }
+          });
+
+          li.appendChild(checkbox);
+          li.appendChild(document.createTextNode(' ' + (item.special?'Special Reward: ':'Reward: ')));
+          li.appendChild(select);
+          li.appendChild(input);
+        }
+
+        if(item.special){
+          li.className = 'special-reward';
+        }
+
+        checklistEl.appendChild(li);
+      });
+    }
+
+    // Add c
