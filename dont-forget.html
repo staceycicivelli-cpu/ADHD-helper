@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Remembering Things</title>
-<link rel="stylesheet" href="style.css" />
 <style>
   body {
     font-family: 'Winky Sans', sans-serif;
@@ -36,9 +35,24 @@
     border-radius: 8px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+  }
+  .item-label {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
   }
   input[type="checkbox"] {
     margin-right: 10px;
+  }
+  .remove-btn {
+    background: #ff9aa2;
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    font-size: 0.9em;
+    border-radius: 6px;
+    cursor: pointer;
   }
   .btn-row {
     display: flex;
@@ -74,7 +88,7 @@
 
 <ul id="checklist" aria-live="polite" aria-atomic="true"></ul>
 
-<div id="addItemContainer" style="display:none; text-align:center;">
+<div id="addItemContainer" style="text-align:center;">
   <input type="text" id="newItemText" placeholder="Add new item" aria-label="Add new checklist item" />
   <button onclick="addCustomItem()">Add Item</button>
 </div>
@@ -84,7 +98,7 @@
 </div>
 
 <script>
-  const lists = {
+  const baseLists = {
     general: ["Keys", "Wallet", "Phone", "Water Bottle", "Bag"],
     party: ["Gift", "Keys", "Wallet", "Charged Phone", "Address"],
     travel: ["Passport", "Tickets", "Phone Charger", "Headphones", "Snacks"],
@@ -92,6 +106,7 @@
     other: []
   };
 
+  const lists = {};
   const checklistEl = document.getElementById("checklist");
   const scenarioSelect = document.getElementById("scenarioSelect");
   const customNameContainer = document.getElementById("customNameContainer");
@@ -100,43 +115,91 @@
   const newItemText = document.getElementById("newItemText");
   const pageTitle = document.getElementById("pageTitle");
 
-  function loadList(scenario) {
-    checklistEl.innerHTML = "";
-    const currentList = lists[scenario];
+  function loadCustomItems(category) {
+    const saved = localStorage.getItem(`customItems-${category}`);
+    return saved ? JSON.parse(saved) : [];
+  }
 
-    currentList.forEach((item, index) => {
-      const savedState = localStorage.getItem(`${scenario}-${index}`) === "true";
+  function saveCustomItems(category, items) {
+    localStorage.setItem(`customItems-${category}`, JSON.stringify(items));
+  }
+
+  function getCurrentList(category) {
+    return [...baseLists[category], ...loadCustomItems(category)];
+  }
+
+  function loadList(category) {
+    checklistEl.innerHTML = "";
+    lists[category] = getCurrentList(category);
+
+    lists[category].forEach((item, index) => {
+      const savedState = localStorage.getItem(`${category}-${index}`) === "true";
+
       const li = document.createElement("li");
+
+      const labelDiv = document.createElement("div");
+      labelDiv.className = "item-label";
+
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.checked = savedState;
       checkbox.addEventListener("change", () => {
-        localStorage.setItem(`${scenario}-${index}`, checkbox.checked);
+        localStorage.setItem(`${category}-${index}`, checkbox.checked);
       });
-      li.appendChild(checkbox);
-      li.appendChild(document.createTextNode(item));
+
+      labelDiv.appendChild(checkbox);
+      labelDiv.appendChild(document.createTextNode(item));
+      li.appendChild(labelDiv);
+
+      // Only add Remove button for custom items (those after base list length)
+      const baseLength = baseLists[category].length;
+      if (index >= baseLength) {
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "remove-btn";
+        removeBtn.textContent = "Remove";
+        removeBtn.addEventListener("click", () => {
+          removeCustomItem(category, index - baseLength);
+        });
+        li.appendChild(removeBtn);
+      }
+
       checklistEl.appendChild(li);
     });
 
-    if (scenario === "other") {
+    if (category === "other") {
       customNameContainer.style.display = "block";
-      addItemContainer.style.display = "block";
-      updatePageTitle();
     } else {
       customNameContainer.style.display = "none";
-      addItemContainer.style.display = "none";
+      customListName.value = "";
       pageTitle.textContent = "Remembering Things";
+      document.title = "Remembering Things";
     }
   }
 
   function addCustomItem() {
     const item = newItemText.value.trim();
-    if (item) {
+    if (!item) return;
+
+    const category = scenarioSelect.value;
+
+    if (category === "other") {
       lists.other.push(item);
-      localStorage.setItem("otherList", JSON.stringify(lists.other));
-      newItemText.value = "";
-      loadList("other");
+      localStorage.setItem("customItems-other", JSON.stringify(lists.other));
+    } else {
+      const customItems = loadCustomItems(category);
+      customItems.push(item);
+      saveCustomItems(category, customItems);
     }
+
+    newItemText.value = "";
+    loadList(category);
+  }
+
+  function removeCustomItem(category, customIndex) {
+    const customItems = loadCustomItems(category);
+    customItems.splice(customIndex, 1);
+    saveCustomItems(category, customItems);
+    loadList(category);
   }
 
   function updatePageTitle() {
@@ -150,10 +213,6 @@
   });
 
   scenarioSelect.addEventListener("change", () => {
-    if (scenarioSelect.value === "other") {
-      const savedOther = JSON.parse(localStorage.getItem("otherList")) || [];
-      lists.other = savedOther;
-    }
     loadList(scenarioSelect.value);
   });
 
