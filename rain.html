@@ -66,9 +66,15 @@
       font-weight: bold;
       transition: background 0.3s ease;
     }
-    #submitBtn {
-  display: block;         /* Makes the button take up its own line */
-  margin: 20px auto;      /* Auto left/right margins = perfectly centered */
+    .btn-row {
+  display: flex;
+  justify-content: center;   /* centers horizontally */
+}
+#submitBtn {
+  margin: 20px 0;            /* vertical breathing room */
+  width: auto;               /* make sure it doesn't stretch full width */
+  display: inline-block;     /* default, but explicit is fine */
+}
     }
     button:hover {
       background: #b4416a;
