@@ -240,6 +240,47 @@
 
   // Initial load
   loadList(scenarioSelect.value);
+  // Create an audio object
+const clickSound = new Audio('click.mp3');
+
+// Modify checkbox creation to play sound on change
+lists[category].forEach((item, index) => {
+  const savedState = localStorage.getItem(`${category}-${index}`) === "true";
+
+  const li = document.createElement("li");
+
+  const labelDiv = document.createElement("div");
+  labelDiv.className = "item-label";
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = savedState;
+
+  // Play click sound on any change
+  checkbox.addEventListener("change", () => {
+    localStorage.setItem(`${category}-${index}`, checkbox.checked);
+    clickSound.currentTime = 0; // rewind
+    clickSound.play();
+  });
+
+  labelDiv.appendChild(checkbox);
+  labelDiv.appendChild(document.createTextNode(item));
+  li.appendChild(labelDiv);
+
+  const baseLength = baseLists[category].length;
+  if (index >= baseLength) {
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "remove-btn";
+    removeBtn.textContent = "Remove";
+    removeBtn.addEventListener("click", () => {
+      removeCustomItem(category, index - baseLength);
+    });
+    li.appendChild(removeBtn);
+  }
+
+  checklistEl.appendChild(li);
+});
+  
 </script>
 
 </body>
