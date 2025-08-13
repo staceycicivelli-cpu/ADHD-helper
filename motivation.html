@@ -15,12 +15,12 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    align-items: center; /* center the whole checklist */
+    align-items: center;
   }
   li {
     display: flex;
     align-items: center;
-    justify-content: center; /* center each item horizontally */
+    justify-content: center;
     margin: 10px 0;
   }
   select { margin-left:10px; }
@@ -144,12 +144,19 @@ function renderChecklist(){
           const customReward = prompt("Enter custom reward:");
           if(customReward){
             item.text = customReward;
-            const existingOption = Array.from(select.options).find(opt=>opt.value==='custom');
-            existingOption.text = customReward;
+            // Add new option if it doesn't exist
+            if(!Array.from(select.options).some(opt=>opt.value===customReward)){
+              const newOption = document.createElement('option');
+              newOption.value = customReward;
+              newOption.textContent = customReward;
+              select.add(newOption, select.options[select.options.length-1]); // before Custom...
+            }
             select.value = customReward;
-          } else { select.value = ''; }
+            renderChecklist();
+          } else { select.value=''; }
         } else {
           item.text = select.value;
+          renderChecklist();
         }
       });
 
@@ -188,15 +195,22 @@ function renderChecklist(){
       bigSelect.addEventListener('change', ()=>{
         if(bigSelect.value==='custom'){
           const customReward = prompt("Enter custom reward:");
-          if(customReward){ bigSelect.options[bigSelect.selectedIndex].text = customReward; bigSelect.value=customReward; }
-          else bigSelect.value='';
+          if(customReward){ 
+            if(!Array.from(bigSelect.options).some(opt=>opt.value===customReward)){
+              const newOption = document.createElement('option');
+              newOption.value = customReward;
+              newOption.textContent = customReward;
+              bigSelect.add(newOption, bigSelect.options.length-1);
+            }
+            bigSelect.value = customReward;
+          } else bigSelect.value='';
         }
       });
       rewardLi.appendChild(rewardCheckbox);
       rewardLi.appendChild(document.createTextNode(' Big, special reward: '));
       rewardLi.appendChild(bigSelect);
       checklistEl.appendChild(rewardLi);
-      return; // skip default append
+      return;
     }
 
     checklistEl.appendChild(li);
