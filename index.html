@@ -12,24 +12,34 @@
   
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f9;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+  font-family: Arial, sans-serif;
+  background: #FFF5E1; /* cream background */
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  text-align: center;
+  padding: 20px;
+}
+
+
+    h1.main-heading {
+      font-family: 'Barriecito', cursive;
+      font-size: 5rem;
+      color: #E75480; /* rosy pink */
+      margin-bottom: 1.5rem;
+      font-weight: 700;
       text-align: center;
-      padding: 20px;
     }
 
     .image-container {
-      position: relative;
       width: 80%;
       max-width: 400px;
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
+      position: relative;
     }
 
     img.landing-image {
@@ -40,60 +50,16 @@
       display: block;
     }
 
-    /* Pinky peach for headings */
-    h1.curved-heading,
     h2.app-title {
-      color: #FF7F50; /* coral pinky-peach */
-    }
-
-    /* Curved heading container */
-    h1.curved-heading {
-      position: absolute;
-      top: -55px; /* adjust vertical position */
-      left: 0;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      transform-origin: center bottom;
-      pointer-events: none;
-      user-select: none;
-      margin: 0;
-      font-family: 'Barriecito', cursive;
       font-size: 3rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      padding: 0;
+      color: #E75480; /* rosy pink */
+      margin: 0 0 1.5rem 0;
+      text-align: center;
     }
 
-    /* Each letter rotated for arc effect */
-    h1.curved-heading span {
-      display: inline-block;
-      transform-origin: bottom center;
-      transition: transform 0.3s ease;
-    }
-
-    h1.curved-heading span:nth-child(1)  { transform: rotate(-16deg); }
-    h1.curved-heading span:nth-child(2)  { transform: rotate(-12deg); }
-    h1.curved-heading span:nth-child(3)  { transform: rotate(-8deg); }
-    h1.curved-heading span:nth-child(4)  { transform: rotate(-4deg); }
-    h1.curved-heading span:nth-child(5)  { transform: rotate(0deg); }
-    h1.curved-heading span:nth-child(6)  { transform: rotate(4deg); }
-    h1.curved-heading span:nth-child(7)  { transform: rotate(8deg); }
-    h1.curved-heading span:nth-child(8)  { transform: rotate(12deg); }
-    h1.curved-heading span:nth-child(9)  { transform: rotate(16deg); }
-    h1.curved-heading span:nth-child(10) { transform: rotate(12deg); }
-    h1.curved-heading span:nth-child(11) { transform: rotate(8deg); }
-    h1.curved-heading span:nth-child(12) { transform: rotate(4deg); }
-    
-    /* Forest green for description text and button text */
     p.description,
     a.button {
-      color: #228B22; /* forest green */
-    }
-
-    /* Below the image & heading */
-    h2.app-title {
-      margin: 0.5rem 0 0.5rem 0;
+      color: #145214; /* very dark forest green */
     }
 
     p.description {
@@ -102,45 +68,38 @@
     }
 
     a.button {
-      background: #a2d5a0; /* lighter green for button background */
+      background: #4a7c40;
       font-weight: bold;
       text-decoration: none;
-      padding: 1rem 2rem;
+      padding: 1.2rem 2.5rem;
       border-radius: 8px;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       transition: background 0.3s ease;
       display: inline-block;
     }
 
     a.button:hover {
-      background: #4a7c40; /* darker green hover */
+      background: #2e451d;
     }
 
-    /* Responsive adjustments */
     @media (max-width: 450px) {
-      h1.curved-heading {
-        font-size: 2rem;
-        top: -40px;
+      h1.main-heading {
+        font-size: 3.5rem;
       }
       h2.app-title {
         font-size: 2rem;
       }
       a.button {
-        font-size: 1rem;
-        padding: 0.8rem 1.5rem;
+        font-size: 1.2rem;
+        padding: 1rem 2rem;
       }
     }
   </style>
 </head>
 <body>
+  <h1 class="main-heading">ADHD Easy Mode</h1>
+
   <div class="image-container">
-    <h1 class="curved-heading">
-      <span>A</span><span>D</span><span>H</span><span>D</span>
-      <span> </span>
-      <span>E</span><span>a</span><span>s</span><span>y</span>
-      <span> </span>
-      <span>M</span><span>o</span><span>d</span><span>e</span>
-    </h1>
     <img
       src="main-image.png"
       alt="Calm and focused person"
