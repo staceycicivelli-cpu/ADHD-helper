@@ -10,11 +10,21 @@
   body { font-family: 'Winky Sans', sans-serif; background-color: #fdf6e3; color: #1b3a2d; padding:20px; text-align:center; }
   h1 { font-family: 'Barriecito', cursive; font-size:3rem; color:#ff9aa2; margin-bottom:20px; }
   label { margin-left:8px; display:block; margin-bottom:10px; }
-  #motivationChecklist { list-style:none; padding:0; display:inline-block; text-align:left; }
-  li { margin:10px 0; display:flex; align-items:center; }
-  .reward { margin-left:30px; font-weight:bold; }
+  #motivationChecklist {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* center the whole checklist */
+  }
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* center each item horizontally */
+    margin: 10px 0;
+  }
   select { margin-left:10px; }
-  .special-reward { color:#ff6f61; font-weight:bold; font-size:1.2em; }
+  .special-reward-text { color:#ff6f61; font-weight:bold; font-size:1.3em; margin-top:20px; }
   .btn { background-color:#ff9aa2; color:#fdf6e3; border:none; padding:10px 15px; cursor:pointer; margin-top:10px; font-family:'Barriecito', cursive; display:block; margin-left:auto; margin-right:auto; }
 </style>
 </head>
@@ -50,6 +60,7 @@ const dingSound = document.getElementById('dingSound');
 
 const taskSelect = document.getElementById('taskSelect');
 const preRewards = ["Snack", "Break", "Watch a short video", "Coffee", "Song", "Stretch"];
+const bigRewards = ["Watch an episode", "Go for a walk", "Listen to an album", "Dance", "Relax on the couch", "Eat something yum"];
 
 // Task templates
 const taskTemplates = {
@@ -65,7 +76,7 @@ const taskTemplates = {
     {type:'task', text:'Put mugs away'},
     {type:'reward', text:''},
     {type:'task', text:'Put remaining dishes away'},
-    {type:'reward', text:'', special:true}
+    {type:'special', text:''}
   ],
   cleanBathroom: [
     {type:'task', text:'Clean sink'},
@@ -73,7 +84,7 @@ const taskTemplates = {
     {type:'task', text:'Scrub toilet'},
     {type:'reward', text:'Snack'},
     {type:'task', text:'Mop floor'},
-    {type:'reward', text:'', special:true}
+    {type:'special', text:''}
   ],
   writeEssay: [
     {type:'task', text:'Outline essay'},
@@ -81,7 +92,7 @@ const taskTemplates = {
     {type:'task', text:'Write first draft'},
     {type:'reward', text:'Short video'},
     {type:'task', text:'Edit draft'},
-    {type:'reward', text:'', special:true}
+    {type:'special', text:''}
   ],
   laundry: [
     {type:'task', text:'Sort clothes'},
@@ -89,7 +100,7 @@ const taskTemplates = {
     {type:'task', text:'Load washer'},
     {type:'reward', text:'Stretch'},
     {type:'task', text:'Fold laundry'},
-    {type:'reward', text:'', special:true}
+    {type:'special', text:''}
   ]
 };
 
@@ -99,23 +110,27 @@ function renderChecklist(){
   checklistEl.innerHTML='';
   items.forEach((item,index)=>{
     const li = document.createElement('li');
-    const checkbox = document.createElement('input');
-    checkbox.type='checkbox';
-    checkbox.checked=item.checked;
 
     if(item.type==='task'){
+      const checkbox = document.createElement('input');
+      checkbox.type='checkbox';
+      checkbox.checked=item.checked;
       checkbox.addEventListener('change', ()=>{
         item.checked = checkbox.checked;
         if(checkbox.checked){ celebrationSound.currentTime=0; celebrationSound.play().catch(err=>console.log(err)); }
       });
       li.appendChild(checkbox);
       li.appendChild(document.createTextNode(' '+item.text));
-    } else {
+    } 
+    else if(item.type==='reward'){
+      const checkbox = document.createElement('input');
+      checkbox.type='checkbox';
+      checkbox.checked=item.checked;
       const select = document.createElement('select');
+
       preRewards.forEach(r=>{
         const option = document.createElement('option');
-        option.value=r;
-        option.textContent=r;
+        option.value=r; option.textContent=r;
         if(r===item.text) option.selected=true;
         select.appendChild(option);
       });
@@ -127,12 +142,15 @@ function renderChecklist(){
       select.addEventListener('change', ()=>{
         if(select.value==='custom'){
           const customReward = prompt("Enter custom reward:");
-          if(customReward) { item.text = customReward; select.options[select.selectedIndex].text = customReward; select.value = customReward; }
-          else select.value = '';
+          if(customReward){
+            item.text = customReward;
+            const existingOption = Array.from(select.options).find(opt=>opt.value==='custom');
+            existingOption.text = customReward;
+            select.value = customReward;
+          } else { select.value = ''; }
         } else {
           item.text = select.value;
         }
-        renderChecklist();
       });
 
       checkbox.addEventListener('change', ()=>{
@@ -141,11 +159,46 @@ function renderChecklist(){
       });
 
       li.appendChild(checkbox);
-      li.appendChild(document.createTextNode(' ' + (item.special?'TASK COMPLETED! FINAL REWARD!':'Reward: ')));
+      li.appendChild(document.createTextNode(' Reward: '));
       li.appendChild(select);
+    } 
+    else if(item.type==='special'){
+      const span = document.createElement('div');
+      span.className='special-reward-text';
+      span.textContent = "Task completed! GO YOU!!";
+      li.appendChild(span);
+      checklistEl.appendChild(li);
+
+      // Big special reward row with checkbox
+      const rewardLi = document.createElement('li');
+      const rewardCheckbox = document.createElement('input');
+      rewardCheckbox.type='checkbox';
+      rewardCheckbox.addEventListener('change', ()=>{
+        if(rewardCheckbox.checked){ dingSound.currentTime=0; dingSound.play().catch(err=>console.log(err)); }
+      });
+      const bigSelect = document.createElement('select');
+      bigRewards.forEach(r=>{
+        const option = document.createElement('option');
+        option.value=r; option.textContent=r;
+        bigSelect.appendChild(option);
+      });
+      const customOption = document.createElement('option');
+      customOption.value='custom'; customOption.textContent='Custom...';
+      bigSelect.appendChild(customOption);
+      bigSelect.addEventListener('change', ()=>{
+        if(bigSelect.value==='custom'){
+          const customReward = prompt("Enter custom reward:");
+          if(customReward){ bigSelect.options[bigSelect.selectedIndex].text = customReward; bigSelect.value=customReward; }
+          else bigSelect.value='';
+        }
+      });
+      rewardLi.appendChild(rewardCheckbox);
+      rewardLi.appendChild(document.createTextNode(' Big, special reward: '));
+      rewardLi.appendChild(bigSelect);
+      checklistEl.appendChild(rewardLi);
+      return; // skip default append
     }
 
-    if(item.special){ li.className='special-reward'; }
     checklistEl.appendChild(li);
   });
 }
@@ -165,7 +218,7 @@ taskSelect.addEventListener('change', ()=>{
 document.getElementById('addTaskBtn').addEventListener('click', ()=>{
   const text = prompt("Enter step description:");
   if(text){
-    let insertIndex = items.findIndex(i=>i.special) !== -1 ? items.findIndex(i=>i.special) : items.length;
+    let insertIndex = items.findIndex(i=>i.type==='special') !== -1 ? items.findIndex(i=>i.type==='special') : items.length;
     items.splice(insertIndex,0,{type:'task', text:text, checked:false});
     renderChecklist();
   }
@@ -175,7 +228,7 @@ document.getElementById('addTaskBtn').addEventListener('click', ()=>{
 document.getElementById('addRewardBtn').addEventListener('click', ()=>{
   const text = prompt("Enter reward description:");
   if(text){
-    let insertIndex = items.findIndex(i=>i.special) !== -1 ? items.findIndex(i=>i.special) : items.length;
+    let insertIndex = items.findIndex(i=>i.type==='special') !== -1 ? items.findIndex(i=>i.type==='special') : items.length;
     items.splice(insertIndex,0,{type:'reward', text:text, checked:false});
     renderChecklist();
   }
