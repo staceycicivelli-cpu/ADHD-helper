@@ -22,9 +22,15 @@ h1, h2 {
   display: inline-block;
   text-align: left;
   margin-top: 20px;
+  min-width: 300px;
+}
+.step-container {
+  margin: 10px 0;
+  padding: 10px;
+  border-left: 3px solid #ffb6a0;
 }
 .check-item {
-  margin: 10px 0;
+  margin: 5px 0;
 }
 .check-item label {
   margin-left: 6px;
@@ -61,6 +67,12 @@ select, input[type="text"] {
 #buttonContainer {
   margin-top: 20px;
 }
+#finalReward {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1.2em;
+  color: #ff6f61;
+}
 </style>
 </head>
 <body>
@@ -71,6 +83,7 @@ select, input[type="text"] {
 <select id="taskSelect">
   <option value="Empty Dishwasher">Empty Dishwasher</option>
   <option value="Clean Bathroom">Clean Bathroom</option>
+  <option value="Write an Essay">Write an Essay</option>
   <option value="custom">Custom Task...</option>
 </select>
 
@@ -107,6 +120,14 @@ document.addEventListener('DOMContentLoaded', () => {
       { step: 'Clean toilet', reward: 'Stretch for 3 mins' },
       { step: 'Wipe mirror', reward: '' },
       { step: 'Mop floor', reward: '' }
+    ],
+    "Write an Essay": [
+      { step: 'Write a plan/outline', reward: '' },
+      { step: 'Write the first sentence', reward: '' },
+      { step: 'Write an introduction', reward: '' },
+      { step: 'Write the first paragraph', reward: '' },
+      { step: 'Write another paragraph', reward: '' },
+      { step: 'Write a conclusion', reward: '' }
     ]
   };
 
@@ -135,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const option = document.createElement('option');
       option.value = opt;
       option.textContent = opt;
-      if(opt===initialText) option.selected = true;
+      if(opt === initialText) option.selected = true;
       select.appendChild(option);
     });
 
@@ -162,8 +183,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return select;
   }
 
-  function addStep(stepText) {
+  function addStep(stepText, rewardText='') {
     if (!stepText) return;
+
+    const stepContainer = document.createElement('div');
+    stepContainer.classList.add('step-container');
+
     const stepDiv = document.createElement('div');
     stepDiv.classList.add('check-item');
 
@@ -174,32 +199,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const stepLabel = document.createElement('label');
-    stepLabel.textContent=stepText;
+    stepLabel.textContent = stepText;
 
     stepDiv.appendChild(stepCheckbox);
     stepDiv.appendChild(stepLabel);
+    stepContainer.appendChild(stepDiv);
 
-    const final = document.getElementById('finalReward');
-    stepsContainer.insertBefore(stepDiv, final);
-  }
-
-  function addReward(rewardText='') {
+    // Add reward dropdown under this step
     const rewardDiv = document.createElement('div');
     rewardDiv.classList.add('check-item');
-
     const rewardCheckbox = document.createElement('input');
     rewardCheckbox.type='checkbox';
-    rewardCheckbox.addEventListener('change', ()=>{ if(rewardCheckbox.checked) celebrationSound.play(); });
-
+    rewardCheckbox.addEventListener('change', ()=>{
+      if(rewardCheckbox.checked) celebrationSound.play();
+    });
     const rewardDropdown = createRewardDropdown(rewardText);
     rewardDiv.appendChild(rewardCheckbox);
     rewardDiv.appendChild(rewardDropdown);
 
+    stepContainer.appendChild(rewardDiv);
+
+    // Insert before final reward
     const final = document.getElementById('finalReward');
-    stepsContainer.insertBefore(rewardDiv, final);
+    if(final){
+      stepsContainer.insertBefore(stepContainer, final);
+    } else {
+      stepsContainer.appendChild(stepContainer);
+    }
   }
 
   function addFinalReward(){
+    let existing = document.getElementById('finalReward');
+    if(existing) existing.remove();
+
     const finalContainer = document.createElement('div');
     finalContainer.id='finalReward';
     finalContainer.style.textAlign='center';
@@ -253,8 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
     stepsContainer.innerHTML='';
     const stepsArray = prefilledTasks[taskName] || [];
     stepsArray.forEach(item=>{
-      addStep(item.step);
-      if(item.reward) addReward(item.reward);
+      addStep(item.step, item.reward);
     });
     addFinalReward();
   }
@@ -280,7 +311,24 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('addRewardBtn').addEventListener('click', ()=>{
-    addReward();
+    // Adds reward to last step container
+    const stepContainers = stepsContainer.querySelectorAll('.step-container');
+    if(stepContainers.length === 0) return;
+    const lastStep = stepContainers[stepContainers.length -1];
+    const rewardDiv = document.createElement('div');
+    rewardDiv.classList.add('check-item');
+
+    const rewardCheckbox = document.createElement('input');
+    rewardCheckbox.type='checkbox';
+    rewardCheckbox.addEventListener('change', ()=>{
+      if(rewardCheckbox.checked) celebrationSound.play();
+    });
+
+    const rewardDropdown = createRewardDropdown();
+    rewardDiv.appendChild(rewardCheckbox);
+    rewardDiv.appendChild(rewardDropdown);
+
+    lastStep.insertBefore(rewardDiv, lastStep.lastChild);
   });
 
   // Load default
