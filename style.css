@@ -42,3 +42,33 @@ a.button:hover {
   background: #2e451d;
 }
 
+.pink-btn {
+    background-color: #ffb6a0; /* pinky-peach */
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    margin: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Winky Sans', sans-serif; /* keep your font consistent */
+}
+
+.pink-btn:hover {
+    background-color: #ffa089; /* slightly darker on hover */
+}
+
+.green-btn {
+    background-color: #1b3a2d; /* forest green */
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    margin: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Winky Sans', sans-serif;
+}
+
+.green-btn:hover {
+    background-color: #163026; /* slightly darker on hover */
+}
+
