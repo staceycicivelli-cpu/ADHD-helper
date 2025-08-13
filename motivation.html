@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+    <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -7,74 +8,74 @@
 <link href="https://fonts.googleapis.com/css2?family=Barriecito&family=Winky+Sans&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
-  body {
-    background-color: #fff7e6;
-    font-family: 'Winky Sans', sans-serif;
-    color: #1b3a2d;
-    text-align: center;
-    padding: 20px;
-  }
+body {
+  background-color: #fff7e6;
+  font-family: 'Winky Sans', sans-serif;
+  color: #1b3a2d;
+  text-align: center;
+  padding: 20px;
+}
 
-  h1, h2 {
-    font-family: 'Barriecito', cursive;
-    color: #ffb6a0;
-  }
+h1, h2 {
+  font-family: 'Barriecito', cursive;
+  color: #ffb6a0;
+}
 
-  #stepsContainer {
-    display: inline-block;
-    text-align: left;
-    margin-top: 20px;
-  }
+#stepsContainer {
+  display: inline-block;
+  text-align: left;
+  margin-top: 20px;
+}
 
-  .check-item {
-    margin: 10px 0;
-    display: flex;
-    align-items: center;
-  }
+.check-item {
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+}
 
-  .check-item input[type="checkbox"] {
-    margin-right: 8px;
-  }
+.check-item input[type="checkbox"] {
+  margin-right: 8px;
+}
 
-  select, input[type="text"] {
-    margin-left: 8px;
-    padding: 4px 6px;
-    font-family: 'Winky Sans', sans-serif;
-  }
+select, input[type="text"] {
+  margin-left: 8px;
+  padding: 4px 6px;
+  font-family: 'Winky Sans', sans-serif;
+}
 
-  .pink-btn {
-    background-color: #ffb6a0;
-    color: #fff;
-    border: none;
-    padding: 10px 16px;
-    margin: 5px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Winky Sans', sans-serif;
-  }
+.pink-btn {
+  background-color: #ffb6a0;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  margin: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Winky Sans', sans-serif;
+}
 
-  .pink-btn:hover {
-    background-color: #ffa089;
-  }
+.pink-btn:hover {
+  background-color: #ffa089;
+}
 
-  .green-btn {
-    background-color: #1b3a2d;
-    color: #fff;
-    border: none;
-    padding: 10px 16px;
-    margin: 5px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Winky Sans', sans-serif;
-  }
+.green-btn {
+  background-color: #1b3a2d;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  margin: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Winky Sans', sans-serif;
+}
 
-  .green-btn:hover {
-    background-color: #163026;
-  }
+.green-btn:hover {
+  background-color: #163026;
+}
 
-  #buttonContainer {
-    margin-top: 20px;
-  }
+#buttonContainer {
+  margin-top: 20px;
+}
 </style>
 </head>
 <body>
@@ -163,13 +164,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     select.addEventListener('change', () => {
-      if(select.value === 'Custom reward') {
+      if(select.value === 'Custom reward'){
         const input = document.createElement('input');
         input.type = 'text';
         input.placeholder = 'Enter your reward';
         input.style.marginLeft = '10px';
         input.addEventListener('change', () => {
-          // Add typed value as option
           const newOption = document.createElement('option');
           newOption.value = input.value;
           newOption.textContent = input.value;
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
           select.style.display = '';
         });
         select.after(input);
-        select.style.display = 'none';
+        select.style.display='none';
         input.focus();
       }
     });
@@ -188,65 +188,65 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function addStepWithReward(stepText='', rewardText='') {
-    const div = document.createElement('div');
-    div.classList.add('check-item');
-
     if(stepText){
+      const stepDiv = document.createElement('div');
+      stepDiv.classList.add('check-item');
       const stepCheckbox = document.createElement('input');
-      stepCheckbox.type = 'checkbox';
-      stepCheckbox.addEventListener('change',()=>{ if(stepCheckbox.checked) celebrationSound.play();});
+      stepCheckbox.type='checkbox';
+      stepCheckbox.addEventListener('change',()=>{ if(stepCheckbox.checked) celebrationSound.play(); });
       const stepLabel = document.createElement('label');
-      stepLabel.textContent = stepText;
-      div.appendChild(stepCheckbox);
-      div.appendChild(stepLabel);
+      stepLabel.textContent=stepText;
+      stepDiv.appendChild(stepCheckbox);
+      stepDiv.appendChild(stepLabel);
+      stepsContainer.appendChild(stepDiv);
     }
 
     if(rewardText!==undefined){
+      const rewardDiv = document.createElement('div');
+      rewardDiv.classList.add('check-item');
       const rewardCheckbox = document.createElement('input');
       rewardCheckbox.type='checkbox';
-      rewardCheckbox.addEventListener('change',()=>{ if(rewardCheckbox.checked) celebrationSound.play();});
+      rewardCheckbox.addEventListener('change',()=>{ if(rewardCheckbox.checked) celebrationSound.play(); });
       const rewardDropdown = createRewardDropdown(rewardText);
-      div.appendChild(rewardCheckbox);
-      div.appendChild(rewardDropdown);
+      rewardDiv.appendChild(rewardCheckbox);
+      rewardDiv.appendChild(rewardDropdown);
+      stepsContainer.appendChild(rewardDiv);
     }
-
-    stepsContainer.appendChild(div);
   }
 
   function addFinalReward() {
     const finalText = document.createElement('h3');
-    finalText.textContent = 'Task completed! GO YOU!!';
+    finalText.textContent='Task completed! GO YOU!!';
     finalText.style.textAlign='center';
     finalText.style.marginTop='20px';
     stepsContainer.appendChild(finalText);
 
     const bigDiv = document.createElement('div');
     bigDiv.classList.add('check-item');
-
     const bigCheckbox = document.createElement('input');
     bigCheckbox.type='checkbox';
-    bigCheckbox.addEventListener('change',()=>{ if(bigCheckbox.checked) celebrationSound.play();});
+    bigCheckbox.addEventListener('change',()=>{ if(bigCheckbox.checked) celebrationSound.play(); });
 
     const bigDropdown = document.createElement('select');
     bigRewardOptions.forEach(opt=>{
-      const option = document.createElement('option');
-      option.value = opt;
-      option.textContent = opt;
+      const option=document.createElement('option');
+      option.value=opt;
+      option.textContent=opt;
       bigDropdown.appendChild(option);
     });
 
     bigDropdown.addEventListener('change',()=>{
       if(bigDropdown.value==='Custom reward'){
-        const input = document.createElement('input');
+        const input=document.createElement('input');
         input.type='text';
         input.placeholder='Enter your reward';
         input.style.marginLeft='10px';
         input.addEventListener('change',()=>{
-          const newOption = document.createElement('option');
-          newOption.value = input.value;
-          newOption.textContent = input.value;
+          const newOption=document.createElement('option');
+          newOption.value=input.value;
+          newOption.textContent=input.value;
           bigDropdown.insertBefore(newOption, bigDropdown.lastChild);
-          bigDropdown.value = input.value;
+          bigDropdown.value=input.value;
           input.remove();
           bigDropdown.style.display='';
         });
@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
     stepsContainer.appendChild(bigDiv);
   }
 
-  function renderChecklist(taskName) {
+  function renderChecklist(taskName){
     stepsContainer.innerHTML='';
     const stepsArray = prefilledTasks[taskName] || [];
     stepsArray.forEach(item=>{
@@ -271,21 +271,35 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Task select handler
-  taskSelect.addEventListener('change', ()=>{
+  taskSelect.addEventListener('change',()=>{
     const selected = taskSelect.value;
     if(selected==='custom'){
       const name = prompt('Enter custom task name:');
-      const displayName = name && name.trim() ? name.trim() : 'Custom Task';
-      currentTaskNameEl.textContent = displayName;
-      renderChecklist(''); // empty steps for custom task
+      const displayName = name && name.trim()? name.trim() : 'Custom Task';
+      currentTaskNameEl.textContent=displayName;
+      stepsContainer.innerHTML=''; // start empty for custom
+      addFinalReward();
     }else{
-      currentTaskNameEl.textContent = selected;
+      currentTaskNameEl.textContent=selected;
       renderChecklist(selected);
     }
   });
 
+  // Add Step button
+  document.getElementById('addStepBtn').addEventListener('click',()=>{
+    const stepName=prompt('Enter step name:');
+    if(stepName && stepName.trim()!==''){
+      addStepWithReward(stepName.trim(),'');
+    }
+  });
+
+  // Add Reward button
+  document.getElementById('addRewardBtn').addEventListener('click',()=>{
+    addStepWithReward('', '');
+  });
+
   // Load default
-  const firstTask = 'Empty Dishwasher';
+  const firstTask='Empty Dishwasher';
   currentTaskNameEl.textContent=firstTask;
   renderChecklist(firstTask);
 });
