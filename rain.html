@@ -108,16 +108,16 @@
 
   <form id="rainForm" onsubmit="return handleSubmit(event)" style="max-width: 600px; width: 100%; text-align: left;">
     <label for="recognize">R - Recognize</label>
-    <textarea id="recognize" placeholder="What are you feeling or avoiding?"></textarea>
+    <textarea id="recognize" placeholder="What are you avoiding? What are you feeling?"></textarea>
 
     <label for="allow">A - Allow</label>
-    <textarea id="allow" placeholder="Allow the feelings without judgment."></textarea>
+    <textarea id="allow" placeholder="What do you notice? Where do you feel it? Does it pass?"></textarea>
 
     <label for="investigate">I - Investigate</label>
-    <textarea id="investigate" placeholder="What is underlying these feelings?"></textarea>
+    <textarea id="investigate" placeholder="What is underneath these feelings?"></textarea>
 
-    <label for="nonIdentify">N - Non-Identify</label>
-    <textarea id="nonIdentify" placeholder="Remember this feeling is not who you are."></textarea>
+    <label for="nurture">N - Nurture</label>
+    <textarea id="nurture" placeholder="What can you do tonbe kind to yourself?"></textarea>
 
     <button type="submit">Show My Responses</button>
   </form>
@@ -132,9 +132,9 @@
       const recognize = document.getElementById('recognize').value.trim();
       const allow = document.getElementById('allow').value.trim();
       const investigate = document.getElementById('investigate').value.trim();
-      const nonIdentify = document.getElementById('nonIdentify').value.trim();
+      const nurture = document.getElementById('nurture').value.trim();
 
-      if (!recognize && !allow && !investigate && !nonIdentify) {
+      if (!recognize && !allow && !investigate && !nurture) {
         alert('Please fill in at least one field.');
         return;
       }
@@ -143,7 +143,7 @@
         `R - Recognize:\n${recognize || '(no response)'}\n\n` +
         `A - Allow:\n${allow || '(no response)'}\n\n` +
         `I - Investigate:\n${investigate || '(no response)'}\n\n` +
-        `N - Non-Identify:\n${nonIdentify || '(no response)'}\n`;
+        `N - Nurture:\n${nurture || '(no response)'}\n`;
 
       const outputDiv = document.getElementById('output');
       outputDiv.textContent = outputText;
