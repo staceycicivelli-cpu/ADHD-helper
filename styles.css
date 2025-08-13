@@ -33,6 +33,12 @@ a.button {
   margin: 0.5rem;
 }
 
+#submitBtn {
+  display: block;
+  margin: 20px auto;
+}
+
 a.button:hover {
   background: #2e451d;
 }
+
