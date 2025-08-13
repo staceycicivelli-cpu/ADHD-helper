@@ -1,7 +1,7 @@
 {
   "name": "ADHD Interactive Helper",
   "short_name": "ADHD Helper",
-  "start_url": "/adhd-helper.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f4f4f9",
   "theme_color": "#4a90e2",
@@ -18,4 +18,3 @@
     }
   ]
 }
-
