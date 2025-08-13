@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Remembering Things</title>
+<style>
+  body {
+    font-family: 'Winky Sans', sans-serif;
+    background-color: #fdf6e3; /* cream */
+    color: #1b3d2f; /* dark forest green */
+    margin: 20px;
+  }
+  h1 {
+    font-family: 'Barriecito', cursive;
+    color: #ff9aa2; /* pinky peach */
+    text-align: center;
+  }
+  select, input[type="text"], button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    font-size: 1em;
+  }
+  ul {
+    list-style-type: none;
+    padding: 0;
+    max-width: 400px;
+    margin: auto;
+  }
+  li {
+    margin: 10px 0;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+  }
+  input[type="checkbox"] {
+    margin-right: 10px;
+  }
+  .btn-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+  }
+  .home-btn {
+    background-color: #ff9aa2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<h1>Remembering Things</h1>
+
+<select id="scenarioSelect">
+  <option value="general">General</option>
+  <option value="party">Going to a Party</option>
+  <option value="travel">Travel</option>
+  <option value="work">Work</option>
+  <option value="other">Other (Custom)</option>
+</select>
+
+<div id="customNameContainer" style="display:none; text-align:center;">
+  <input type="text" id="customListName" placeholder="Name your checklist">
+</div>
+
+<ul id="checklist"></ul>
+
+<div id="addItemContainer" style="display:none; text-align:center;">
+  <input type="text" id="newItemText" placeholder="Add new item">
+  <button onclick="addCustomItem()">Add Item</button>
+</div>
+
+<div class="btn-row">
+  <button class="home-btn" onclick="window.location.href='index.html'">Back to Home</button>
+</div>
+
+<script>
+  const lists = {
+    general: ["Keys", "Wallet", "Phone", "Water Bottle", "Bag"],
+    party: ["Gift", "Keys", "Wallet", "Charged Phone", "Address"],
+    travel: ["Passport", "Tickets", "Phone Charger", "Headphones", "Snacks"],
+    work: ["Laptop", "Notebook", "Pens", "Lunch", "Access Card"],
+    other: []
+  };
+
+  const checklistEl = document.getElementById("checklist");
+  const scenarioSelect = document.getElementById("scenarioSelect");
+  const customNameContainer = document.getElementById("customNameContainer");
+  const addItemContainer = document.getElementById("addItemContainer");
+  const customListName = document.getElementById("customListName");
+  const newItemText = document.getElementById("newItemText");
+
+  function loadList(scenario) {
+    checklistEl.innerHTML = "";
+    const currentList = lists[scenario];
+
+    currentList.forEach((item, index) => {
+      const savedState = localStorage.getItem(`${scenario}-${index}`) === "true";
+      const li = document.createElement("li");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = savedState;
+      checkbox.addEventListener("change", () => {
+        localStorage.setItem(`${scenario}-${index}`, checkbox.checked);
+      });
+      li.appendChild(checkbox);
+      li.appendChild(document.createTextNode(item));
+      checklistEl.appendChild(li);
+    });
+
+    if (scenario === "other") {
+      customNameContainer.style.display = "block";
+      addItemContainer.style.display = "block";
+    } else {
+      customNameContainer.style.display = "none";
+      addItemContainer.style.display = "none";
+    }
+  }
+
+  function addCustomItem() {
+    const item = newItemText.value.trim();
+    if (item) {
+      lists.other.push(item);
+      localStorage.setItem("otherList", JSON.stringify(lists.other));
+      newItemText.value = "";
+      loadList("other");
+    }
+  }
+
+  scenarioSelect.addEventListener("change", () => {
+    if (scenarioSelect.value === "other") {
+      const savedOther = JSON.parse(localStorage.getItem("otherList")) || [];
+      lists.other = savedOther;
+    }
+    loadList(scenarioSelect.value);
+  });
+
+  // Load initial list
+  loadList(scenarioSelect.value);
+</script>
+
+</body>
+</html>
