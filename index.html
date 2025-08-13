@@ -85,7 +85,7 @@
   <input type="text" id="measurable" placeholder="How will you know it's done?" />
   
   <label for="achievable">Achievable</label>
-  <input type="text" id="achievable" placeholder="Is it realistic? If not, which one part is achieveable?" />
+  <input type="text" id="achievable" placeholder="Is it realistic? If not, which one part is?" />
   
   <label for="relevant">Relevant</label>
   <input type="text" id="relevant" placeholder="Why is it important?" />
@@ -151,7 +151,7 @@
       return;
     }
     
-    const fullGoal = `I will ${specific}, measurable by ${measurable}, achievable by ${achievable}, relevant because ${relevant}, and completed by ${timebound}.`;
+    const fullGoal = `I will ${specific}. This will look like ${measurable}. My minimum achievement will be ${achievable} This is relevant because ${relevant}, and I will try to complete it by ${timebound}.`;
     goalOutput.textContent = fullGoal;
     goalOutput.style.color = '#2196F3';
   });
@@ -253,5 +253,6 @@
 
 </body>
 </html>
+
 
 
