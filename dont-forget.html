@@ -1,13 +1,16 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
-<link href="https://fonts.googleapis.com/css2?family=Barriecito&family=Winky+Sans&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css" />
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<h1 id="pageTitle">Remember Ur Things</h1>
-<p class="description"> Don't leave home without the important stuff! Tick off each item as you grab it, and add anything thats missing!
-</p>
+<title>Remember Ur Things</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Barriecito&family=Winky+Sans&display=swap" rel="stylesheet" />
+
+<!-- CSS -->
+<link rel="stylesheet" href="style.css" />
+
 <style>
   body {
     font-family: 'Winky Sans', sans-serif;
@@ -15,34 +18,40 @@
     color: #1b3d2f; /* dark forest green */
     margin: 20px;
   }
-  a.button {
-      background: #4a7c40;
-      color: #145214;
-      font-weight: bold;
-      text-decoration: none;
-      padding: 1.2rem 2.5rem;
-      border-radius: 8px;
-      font-size: 1.4rem;
-      transition: background 0.3s ease;
-      display: inline-block;
-      margin-top: 2rem;
+
   h1 {
     font-family: 'Barriecito', cursive;
-    color: #ff9aa2; /* pinky peach */
+    color: #ff9aa2; /* pinky-peach */
     text-align: center;
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
   }
+
+  .page-description {
+    font-family: 'Winky Sans', sans-serif;
+    color: #1b3d2f;
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   select, input[type="text"], button {
     display: block;
     margin: 10px auto;
     padding: 10px;
     font-size: 1em;
   }
+
   ul {
     list-style-type: none;
     padding: 0;
     max-width: 400px;
     margin: auto;
   }
+
   li {
     margin: 10px 0;
     background: white;
@@ -52,42 +61,51 @@
     align-items: center;
     justify-content: space-between;
   }
+
   .item-label {
     flex-grow: 1;
     display: flex;
     align-items: center;
   }
+
   input[type="checkbox"] {
     margin-right: 10px;
   }
+
   .remove-btn {
-    background: #4a7c40;
+    background: #ff9aa2;
     border: none;
-    color: #333;
+    color: white;
     padding: 6px 12px;
     font-size: 0.9em;
     border-radius: 6px;
     cursor: pointer;
   }
+
   .btn-row {
     display: flex;
     justify-content: center;
     margin-top: 30px;
+    gap: 10px;
   }
+
   .home-btn {
-    background-color: #ff9aa2 /* dark forest green */
+    background-color: #ff9aa2;
     color: white;
     border: none;
     padding: 10px 20px;
-    font-size: 1em;
+    font-size: 1.2rem;
     border-radius: 8px;
     cursor: pointer;
+    font-family: 'Barriecito', cursive;
   }
 </style>
 </head>
+
 <body>
 
-<h1 id="pageTitle">Remembering Things</h1>
+<h1 id="pageTitle">Remember Ur Things</h1>
+<p class="page-description">Quick and easy checklists to help you stay organized and remember important stuff.</p>
 
 <select id="scenarioSelect" aria-label="Choose checklist category">
   <option value="general">General</option>
@@ -166,7 +184,6 @@
       labelDiv.appendChild(document.createTextNode(item));
       li.appendChild(labelDiv);
 
-      // Only add Remove button for custom items (those after base list length)
       const baseLength = baseLists[category].length;
       if (index >= baseLength) {
         const removeBtn = document.createElement("button");
@@ -186,8 +203,8 @@
     } else {
       customNameContainer.style.display = "none";
       customListName.value = "";
-      pageTitle.textContent = "Remembering Things";
-      document.title = "Remembering Things";
+      pageTitle.textContent = "Remember Ur Things";
+      document.title = "Remember Ur Things";
     }
   }
 
@@ -197,14 +214,9 @@
 
     const category = scenarioSelect.value;
 
-    if (category === "other") {
-      lists.other.push(item);
-      localStorage.setItem("customItems-other", JSON.stringify(lists.other));
-    } else {
-      const customItems = loadCustomItems(category);
-      customItems.push(item);
-      saveCustomItems(category, customItems);
-    }
+    const customItems = loadCustomItems(category);
+    customItems.push(item);
+    saveCustomItems(category, customItems);
 
     newItemText.value = "";
     loadList(category);
@@ -220,16 +232,11 @@
   function updatePageTitle() {
     const name = customListName.value.trim();
     pageTitle.textContent = name ? name : "Custom Checklist";
-    document.title = name ? name : "Remembering Things";
+    document.title = name ? name : "Remember Ur Things";
   }
 
-  customListName.addEventListener("input", () => {
-    updatePageTitle();
-  });
-
-  scenarioSelect.addEventListener("change", () => {
-    loadList(scenarioSelect.value);
-  });
+  customListName.addEventListener("input", updatePageTitle);
+  scenarioSelect.addEventListener("change", () => loadList(scenarioSelect.value));
 
   // Initial load
   loadList(scenarioSelect.value);
