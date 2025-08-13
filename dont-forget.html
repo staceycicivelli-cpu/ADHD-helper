@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Remembering Things</title>
 <style>
   body {
@@ -57,9 +57,9 @@
 </head>
 <body>
 
-<h1>Remembering Things</h1>
+<h1 id="pageTitle">Remembering Things</h1>
 
-<select id="scenarioSelect">
+<select id="scenarioSelect" aria-label="Choose checklist category">
   <option value="general">General</option>
   <option value="party">Going to a Party</option>
   <option value="travel">Travel</option>
@@ -68,13 +68,13 @@
 </select>
 
 <div id="customNameContainer" style="display:none; text-align:center;">
-  <input type="text" id="customListName" placeholder="Name your checklist">
+  <input type="text" id="customListName" placeholder="Name your checklist" aria-label="Custom checklist name" />
 </div>
 
-<ul id="checklist"></ul>
+<ul id="checklist" aria-live="polite" aria-atomic="true"></ul>
 
 <div id="addItemContainer" style="display:none; text-align:center;">
-  <input type="text" id="newItemText" placeholder="Add new item">
+  <input type="text" id="newItemText" placeholder="Add new item" aria-label="Add new checklist item" />
   <button onclick="addCustomItem()">Add Item</button>
 </div>
 
@@ -97,6 +97,7 @@
   const addItemContainer = document.getElementById("addItemContainer");
   const customListName = document.getElementById("customListName");
   const newItemText = document.getElementById("newItemText");
+  const pageTitle = document.getElementById("pageTitle");
 
   function loadList(scenario) {
     checklistEl.innerHTML = "";
@@ -119,9 +120,11 @@
     if (scenario === "other") {
       customNameContainer.style.display = "block";
       addItemContainer.style.display = "block";
+      updatePageTitle();
     } else {
       customNameContainer.style.display = "none";
       addItemContainer.style.display = "none";
+      pageTitle.textContent = "Remembering Things";
     }
   }
 
@@ -135,6 +138,16 @@
     }
   }
 
+  function updatePageTitle() {
+    const name = customListName.value.trim();
+    pageTitle.textContent = name ? name : "Custom Checklist";
+    document.title = name ? name : "Remembering Things";
+  }
+
+  customListName.addEventListener("input", () => {
+    updatePageTitle();
+  });
+
   scenarioSelect.addEventListener("change", () => {
     if (scenarioSelect.value === "other") {
       const savedOther = JSON.parse(localStorage.getItem("otherList")) || [];
@@ -143,7 +156,7 @@
     loadList(scenarioSelect.value);
   });
 
-  // Load initial list
+  // Initial load
   loadList(scenarioSelect.value);
 </script>
 
