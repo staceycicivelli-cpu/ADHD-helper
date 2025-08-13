@@ -1,261 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Motivation Tool</title>
-<link rel="stylesheet" href="style.css">
-<link href="https://fonts.googleapis.com/css2?family=Barriecito&family=Winky+Sans&display=swap" rel="stylesheet">
-<style>
-  body { font-family: 'Winky Sans', sans-serif; background-color: #fdf6e3; color: #1b3a2d; padding:20px; text-align:center; }
-  h1 { font-family: 'Barriecito', cursive; font-size:3rem; color:#ff9aa2; margin-bottom:20px; }
-  label { margin-left:8px; display:block; margin-bottom:10px; }
-  #motivationChecklist {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  li {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 10px 0;
-  }
-  select { margin-left:10px; }
-  .special-reward-text { color:#ff6f61; font-weight:bold; font-size:1.3em; margin-top:20px; }
-  .btn { background-color:#4a7c40; color:#fdf6e3; border:none; padding:10px 15px; cursor:pointer; margin-top:10px; font-family:'Winky Sans', sans serif; display:block; margin-left:auto; margin-right:auto; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motivation Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barriecito&family=Winky+Sans&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #fff7e6; /* cream background */
+      font-family: 'Winky Sans', sans-serif;
+      color: #1b3a2d; /* dark forest green */
+      text-align: center;
+      padding: 20px;
+    }
 
-  home-btn {
-    background-color: #4a7c40;;
-    color: #145214;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1.2rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Winky Sans', sans-serif;
-}
-</style>
+    h1, h2 {
+      font-family: 'Barriecito', cursive;
+      color: #ffb6a0; /* pinky-peach headings */
+    }
+
+    #stepsContainer {
+      display: inline-block;
+      text-align: left;
+      margin-top: 20px;
+    }
+
+    .check-item {
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .check-item input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    select, input[type="text"] {
+      margin-left: 8px;
+      padding: 4px 6px;
+      font-family: 'Winky Sans', sans-serif;
+    }
+
+    .pink-btn {
+      background-color: #ffb6a0;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      margin: 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Winky Sans', sans-serif;
+    }
+
+    .pink-btn:hover {
+      background-color: #ffa089;
+    }
+
+    .green-btn {
+      background-color: #1b3a2d;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      margin: 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Winky Sans', sans-serif;
+    }
+
+    .green-btn:hover {
+      background-color: #163026;
+    }
+
+    #buttonContainer {
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
+  <h1>Motivation Tool</h1>
 
-<h1>Motivation Tool</h1>
-
-<label>Choose Overall Task: 
+  <label for="taskSelect">Choose Overall Task:</label>
   <select id="taskSelect">
-    <option value="emptyDishwasher">Empty Dishwasher</option>
-    <option value="cleanBathroom">Clean Bathroom</option>
-    <option value="writeEssay">Write Essay</option>
-    <option value="laundry">Do Laundry</option>
-    <option value="custom">Custom...</option>
+    <option value="Empty Dishwasher">Empty Dishwasher</option>
+    <option value="Clean Bathroom">Clean Bathroom</option>
+    <option value="custom">Custom Task...</option>
   </select>
-</label>
-<h2 id="currentTaskName" style="text-align:center; margin-top:10px;"></h2>
-<ul id="motivationChecklist"></ul>
 
-<button id="addStepBtn">Add Step</button>
-<button id="addRewardBtn">Add Reward</button>
-<button id="homeBtn">Back to Home</button>
+  <h2 id="currentTaskName">Empty Dishwasher</h2>
 
-  <!-- Sounds -->
-<audio id="celebrationSound" src="celebration.mp3"></audio>
-<audio id="dingSound" src="ding.mp3"></audio>
+  <div id="stepsContainer"></div>
 
-<script>
-const checklistEl = document.getElementById('motivationChecklist');
-const celebrationSound = document.getElementById('celebrationSound');
-const dingSound = document.getElementById('dingSound');
+  <div id="buttonContainer">
+    <button id="addStepBtn" class="pink-btn">Add Step</button>
+    <button id="addRewardBtn" class="pink-btn">Add Reward</button>
+    <button id="homeBtn" class="green-btn">Back to Home</button>
+  </div>
 
-const taskSelect = document.getElementById('taskSelect');
-const preRewards = ["Snack", "Break", "Watch a short video", "Coffee", "Song", "Stretch"];
-const bigRewards = ["Watch an episode", "Go for a walk", "Listen to an album", "Dance", "Relax on the couch", "Eat something yum"];
+  <audio id="celebrationSound" src="click.mp3"></audio>
 
-// Task templates
-const taskTemplates = {
-  emptyDishwasher: [
-    {type:'task', text:'Put cutlery away'},
-    {type:'reward', text:'Listen to a song'},
-    {type:'task', text:'Put plates away'},
-    {type:'reward', text:'Watch a short YouTube video'},
-    {type:'task', text:'Put bowls away'},
-    {type:'reward', text:'3 minute social media scroll'},
-    {type:'task', text:'Put cups/glasses away'},
-    {type:'reward', text:''},
-    {type:'task', text:'Put mugs away'},
-    {type:'reward', text:''},
-    {type:'task', text:'Put remaining dishes away'},
-    {type:'special', text:''}
-  ],
-  cleanBathroom: [
-    {type:'task', text:'Clean sink'},
-    {type:'reward', text:'5 minute break'},
-    {type:'task', text:'Scrub toilet'},
-    {type:'reward', text:'Snack'},
-    {type:'task', text:'Mop floor'},
-    {type:'special', text:''}
-  ],
-  writeEssay: [
-    {type:'task', text:'Outline essay'},
-    {type:'reward', text:'Coffee break'},
-    {type:'task', text:'Write first draft'},
-    {type:'reward', text:'Short video'},
-    {type:'task', text:'Edit draft'},
-    {type:'special', text:''}
-  ],
-  laundry: [
-    {type:'task', text:'Sort clothes'},
-    {type:'reward', text:'Snack'},
-    {type:'task', text:'Load washer'},
-    {type:'reward', text:'Stretch'},
-    {type:'task', text:'Fold laundry'},
-    {type:'special', text:''}
-  ]
-};
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const taskSelect = document.getElementById('taskSelect');
+    const currentTaskNameEl = document.getElementById('currentTaskName');
+    const stepsContainer = document.getElementById('stepsContainer');
+    const celebrationSound = document.getElementById('celebrationSound');
 
-let items = JSON.parse(JSON.stringify(taskTemplates['emptyDishwasher']));
+    const prefilledTasks = {
+      "Empty Dishwasher": [
+        { type: 'step', text: 'Put cutlery away' },
+        { type: 'reward', text: 'Listen to a song' },
+        { type: 'step', text: 'Put plates away' },
+        { type: 'reward', text: 'Watch a short YouTube video' },
+        { type: 'step', text: 'Put bowls away' },
+        { type: 'reward', text: '3 minute social media scroll' },
+        { type: 'step', text: 'Put cups/glasses away' },
+        { type: 'reward', text: '' },
+        { type: 'step', text: 'Put mugs away' },
+        { type: 'reward', text: '' },
+        { type: 'step', text: 'Put remaining dishes away' }
+      ],
+      "Clean Bathroom": [
+        { type: 'step', text: 'Scrub sink' },
+        { type: 'reward', text: 'Drink a coffee' },
+        { type: 'step', text: 'Clean toilet' },
+        { type: 'reward', text: 'Stretch for 3 mins' },
+        { type: 'step', text: 'Wipe mirror' },
+        { type: 'reward', text: '' },
+        { type: 'step', text: 'Mop floor' }
+      ]
+    };
 
-function renderChecklist(){
-  checklistEl.innerHTML='';
-  items.forEach((item,index)=>{
-    const li = document.createElement('li');
+    const rewardOptions = [
+      'Listen to a song',
+      'Watch a short YouTube video',
+      '3 minute social media scroll',
+      'Eat a snack',
+      'Take a short walk',
+      'Custom reward'
+    ];
 
-    if(item.type==='task'){
-      const checkbox = document.createElement('input');
-      checkbox.type='checkbox';
-      checkbox.checked=item.checked;
-      checkbox.addEventListener('change', ()=>{
-        item.checked = checkbox.checked;
-        if(checkbox.checked){ celebrationSound.currentTime=0; celebrationSound.play().catch(err=>console.log(err)); }
-      });
-      li.appendChild(checkbox);
-      li.appendChild(document.createTextNode(' '+item.text));
-    } 
-    else if(item.type==='reward'){
-      const checkbox = document.createElement('input');
-      checkbox.type='checkbox';
-      checkbox.checked=item.checked;
+    const bigRewardOptions = [
+      'Watch an episode',
+      'Go for a walk',
+      'Listen to an album',
+      'Dance',
+      'Relax on the couch',
+      'Eat something yum',
+      'Custom reward'
+    ];
+
+    function createRewardDropdown(initialText) {
       const select = document.createElement('select');
+      select.classList.add('reward-dropdown');
 
-      preRewards.forEach(r=>{
+      rewardOptions.forEach(optText => {
         const option = document.createElement('option');
-        option.value=r; option.textContent=r;
-        if(r===item.text) option.selected=true;
+        option.value = optText;
+        option.textContent = optText;
+        if (optText === initialText) option.selected = true;
         select.appendChild(option);
       });
-      const customOption = document.createElement('option');
-      customOption.value='custom';
-      customOption.textContent='Custom...';
-      select.appendChild(customOption);
 
-      taskSelect.addEventListener('change', () => {
-    let displayName = taskSelect.options[taskSelect.selectedIndex].text;
-
-    if (taskSelect.value === 'custom') {
-        const name = prompt('Enter custom overall task name:');
-        if (name && name.trim() !== '') {
-            displayName = name.trim();
+      select.addEventListener('change', () => {
+        if (select.value === 'Custom reward') {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.placeholder = 'Enter your reward';
+          input.style.marginLeft = '10px';
+          input.addEventListener('change', () => {
+            const newOption = document.createElement('option');
+            newOption.value = input.value;
+            newOption.textContent = input.value;
+            select.insertBefore(newOption, select.lastChild);
+            select.value = input.value;
+            input.remove();
+            select.style.display = '';
+          });
+          select.after(input);
+          select.style.display = 'none';
         }
-        items = []; // start with no steps for custom
-    } else {
-        items = JSON.parse(JSON.stringify(taskTemplates[taskSelect.value]));
+      });
+
+      return select;
     }
 
-    document.getElementById('currentTaskName').textContent = displayName;
-    renderChecklist();
-});
+    function addStepWithReward(stepText, rewardText) {
+      const div = document.createElement('div');
+      div.classList.add('check-item');
 
+      if (stepText) {
+        const stepCheckbox = document.createElement('input');
+        stepCheckbox.type = 'checkbox';
+        stepCheckbox.addEventListener('change', () => {
+          if (stepCheckbox.checked) celebrationSound.play();
+        });
+        const stepLabel = document.createElement('label');
+        stepLabel.textContent = stepText;
+        div.appendChild(stepCheckbox);
+        div.appendChild(stepLabel);
+      }
 
-      checkbox.addEventListener('change', ()=>{
-        item.checked = checkbox.checked;
-        if(checkbox.checked){ dingSound.currentTime=0; dingSound.play().catch(err=>console.log(err)); }
+      if (rewardText !== undefined) {
+        const rewardCheckbox = document.createElement('input');
+        rewardCheckbox.type = 'checkbox';
+        rewardCheckbox.addEventListener('change', () => {
+          if (rewardCheckbox.checked) celebrationSound.play();
+        });
+        const rewardDropdown = createRewardDropdown(rewardText);
+        div.appendChild(rewardCheckbox);
+        div.appendChild(rewardDropdown);
+      }
+
+      stepsContainer.appendChild(div);
+    }
+
+    function addFinalReward() {
+      const finalText = document.createElement('h3');
+      finalText.textContent = 'Task completed! GO YOU!!';
+      finalText.style.textAlign = 'center';
+      finalText.style.marginTop = '20px';
+      stepsContainer.appendChild(finalText);
+
+      const bigDiv = document.createElement('div');
+      bigDiv.classList.add('check-item');
+      const bigCheckbox = document.createElement('input');
+      bigCheckbox.type = 'checkbox';
+      bigCheckbox.addEventListener('change', () => {
+        if (bigCheckbox.checked) celebrationSound.play();
       });
 
-      li.appendChild(checkbox);
-      li.appendChild(document.createTextNode(' Reward: '));
-      li.appendChild(select);
-    } 
-    else if(item.type==='special'){
-      const span = document.createElement('div');
-      span.className='special-reward-text';
-      span.textContent = "Task completed! GO YOU!!";
-      li.appendChild(span);
-      checklistEl.appendChild(li);
-
-      // Big special reward row with checkbox
-      const rewardLi = document.createElement('li');
-      const rewardCheckbox = document.createElement('input');
-      rewardCheckbox.type='checkbox';
-      rewardCheckbox.addEventListener('change', ()=>{
-        if(rewardCheckbox.checked){ dingSound.currentTime=0; dingSound.play().catch(err=>console.log(err)); }
-      });
-      const bigSelect = document.createElement('select');
-      bigRewards.forEach(r=>{
+      const bigDropdown = document.createElement('select');
+      bigRewardOptions.forEach(opt => {
         const option = document.createElement('option');
-        option.value=r; option.textContent=r;
-        bigSelect.appendChild(option);
+        option.value = opt;
+        option.textContent = opt;
+        bigDropdown.appendChild(option);
       });
-      const customOption = document.createElement('option');
-      customOption.value='custom'; customOption.textContent='Custom...';
-      bigSelect.appendChild(customOption);
-      bigSelect.addEventListener('change', ()=>{
-        if(bigSelect.value==='custom'){
-          const customReward = prompt("Enter custom reward:");
-          if(customReward){ 
-            if(!Array.from(bigSelect.options).some(opt=>opt.value===customReward)){
-              const newOption = document.createElement('option');
-              newOption.value = customReward;
-              newOption.textContent = customReward;
-              bigSelect.add(newOption, bigSelect.options.length-1);
-            }
-            bigSelect.value = customReward;
-          } else bigSelect.value='';
+
+      bigDropdown.addEventListener('change', () => {
+        if (bigDropdown.value === 'Custom reward') {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.placeholder = 'Enter your reward';
+          input.style.marginLeft = '10px';
+          input.addEventListener('change', () => {
+            const newOption = document.createElement('option');
+            newOption.value = input.value;
+            newOption.textContent = input.value;
+            bigDropdown.insertBefore(newOption, bigDropdown.lastChild);
+            bigDropdown.value = input.value;
+            input.remove();
+            bigDropdown.style.display = '';
+          });
+          bigDropdown.after(input);
+          bigDropdown.style.display = 'none';
         }
       });
-      rewardLi.appendChild(rewardCheckbox);
-      rewardLi.appendChild(document.createTextNode(' Big, special reward: '));
-      rewardLi.appendChild(bigSelect);
-      checklistEl.appendChild(rewardLi);
-      return;
+
+      bigDiv.appendChild(bigCheckbox);
+      bigDiv.appendChild(bigDropdown);
+      stepsContainer.appendChild(bigDiv);
     }
 
-    checklistEl.appendChild(li);
+    function renderChecklist(taskName, stepsArray) {
+      stepsContainer.innerHTML = '';
+      stepsArray.forEach(item => {
+        addStepWithReward(item.type === 'step' ? item.text : '', item.type === 'reward' ? item.text : '');
+      });
+      addFinalReward();
+    }
+
+    // Task selection handler
+    taskSelect.addEventListener('change', () => {
+      let selectedTask = taskSelect.value;
+      let steps = [];
+
+      if (selectedTask === 'custom') {
+        const name = prompt('Enter your custom overall task name:');
+        const displayName = (name && name.trim()) ? name.trim() : 'Custom Task';
+        currentTaskNameEl.textContent = displayName;
+      } else {
+        currentTaskNameEl.textContent = selectedTask;
+        steps = JSON.parse(JSON.stringify(prefilledTasks[selectedTask] || []));
+      }
+
+      renderChecklist(selectedTask, steps);
+    });
+
+    // Load default
+    const firstTask = Object.keys(prefilledTasks)[0];
+    currentTaskNameEl.textContent = firstTask;
+    renderChecklist(firstTask, prefilledTasks[firstTask]);
   });
-}
-
-// Handle task selection dropdown
-taskSelect.addEventListener('change', ()=>{
-  if(taskSelect.value==='custom'){
-    const customTask = prompt("Enter custom overall task name:");
-    items = [];
-  } else {
-    items = JSON.parse(JSON.stringify(taskTemplates[taskSelect.value]));
-  }
-  renderChecklist();
-});
-
-// Add custom step before final special reward
-document.getElementById('addTaskBtn').addEventListener('click', ()=>{
-  const text = prompt("Enter step description:");
-  if(text){
-    let insertIndex = items.findIndex(i=>i.type==='special') !== -1 ? items.findIndex(i=>i.type==='special') : items.length;
-    items.splice(insertIndex,0,{type:'task', text:text, checked:false});
-    renderChecklist();
-  }
-});
-
-// Add custom reward before final special reward
-document.getElementById('addRewardBtn').addEventListener('click', ()=>{
-  const text = prompt("Enter reward description:");
-  if(text){
-    let insertIndex = items.findIndex(i=>i.type==='special') !== -1 ? items.findIndex(i=>i.type==='special') : items.length;
-    items.splice(insertIndex,0,{type:'reward', text:text, checked:false});
-    renderChecklist();
-  }
-});
-
-renderChecklist();
-</script>
+  </script>
 </body>
 </html>
