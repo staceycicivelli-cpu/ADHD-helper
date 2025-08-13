@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ADHD<br>Easy Mode</title>
   <link rel="manifest" href="manifest.json" />
-  <link href="styles.css" rel="stylesheet" />
   <meta name="theme-color" content="#4a90e2" />
   
   <!-- Winky Sans font -->
@@ -28,15 +27,6 @@
       padding: 20px;
     }
 
-    <h2 class="app-title">Choose a Tool</h2>
-<nav>
-  <ul style="list-style:none; padding:0; margin: 0;">
-    <li><a href="smart-goals.html" class="button">SMART Goal Builder</a></li>
-    <li><a href="timers.html" class="button">Timers</a></li>
-    <li><a href="rain.html" class="button">RAIN Method Helper</a></li>
-  </ul>
-</nav>
-    
     h1.main-heading {
       font-family: 'Barriecito', cursive;
       font-size: 5rem;
@@ -88,10 +78,22 @@
       font-size: 1.4rem;
       transition: background 0.3s ease;
       display: inline-block;
+      margin: 0.5rem 1rem;
     }
 
     a.button:hover {
       background: #2e451d;
+      color: #a2d5a0;
+    }
+
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    nav li {
+      margin-bottom: 1rem;
     }
 
     @media (max-width: 450px) {
@@ -121,9 +123,14 @@
 
   <h2 class="app-title">ADHD Interactive Helper</h2>
   <p class="description">Easy-mode tools for focus, motivation, and task management.</p>
-  <a href="tools.html" class="button">Go to Tools</a>
+
+  <h2 class="app-title">Choose a Tool</h2>
+  <nav>
+    <ul>
+      <li><a href="smart-goals.html" class="button">SMART Goal Builder</a></li>
+      <li><a href="timers.html" class="button">Timers</a></li>
+      <li><a href="rain.html" class="button">RAIN Method Helper</a></li>
+    </ul>
+  </nav>
 </body>
 </html>
-
-
-
