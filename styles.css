@@ -1,0 +1,38 @@
+body {
+  font-family: 'Winky Sans', Arial, sans-serif;
+  background: #FFF5E1;
+  color: #333;
+  text-align: center;
+  padding: 20px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  justify-content: center;
+}
+
+h1, h2 {
+  font-family: 'Barriecito', cursive;
+  color: #E75480;
+}
+
+p, a.button {
+  color: #145214;
+}
+
+a.button {
+  background: #4a7c40;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 1.2rem 2.5rem;
+  border-radius: 8px;
+  font-size: 1.4rem;
+  transition: background 0.3s ease;
+  display: inline-block;
+  margin: 0.5rem;
+}
+
+a.button:hover {
+  background: #2e451d;
+}
