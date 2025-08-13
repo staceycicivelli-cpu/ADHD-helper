@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RAIN Method Helper</title>
+  <link href="https://fonts.googleapis.com/css2?family=Winky+Sans&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barriecito&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Winky Sans', Arial, sans-serif;
+      background: #FFF5E1;
+      color: #333;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    h1 {
+      font-family: 'Barriecito', cursive;
+      font-size: 4rem;
+      color: #E75480;
+      margin-bottom: 1rem;
+    }
+    p.description {
+      color: #145214;
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      max-width: 600px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 1rem;
+      margin-bottom: 0.3rem;
+      color: #4a7c40;
+      text-align: left;
+      max-width: 600px;
+      width: 100%;
+    }
+    textarea {
+      width: 100%;
+      max-width: 600px;
+      height: 80px;
+      padding: 8px;
+      font-family: 'Winky Sans', Arial, sans-serif;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #4a7c40;
+      resize: vertical;
+    }
+    button {
+      background: #E75480;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.3rem;
+      margin-top: 1.5rem;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #b4416a;
+    }
+    .output {
+      margin-top: 2rem;
+      max-width: 600px;
+      text-align: left;
+      border: 1px solid #4a7c40;
+      background: #f9f9f4;
+      padding: 1rem;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      color: #145214;
+      font-size: 1.1rem;
+      font-family: 'Winky Sans', Arial, sans-serif;
+    }
+    a.button {
+      background: #4a7c40;
+      color: #145214;
+      font-weight: bold;
+      text-decoration: none;
+      padding: 1.2rem 2.5rem;
+      border-radius: 8px;
+      font-size: 1.4rem;
+      transition: background 0.3s ease;
+      display: inline-block;
+      margin-top: auto;
+      margin-bottom: 1rem;
+    }
+    a.button:hover {
+      background: #2e451d;
+      color: #a2d5a0;
+    }
+  </style>
+</head>
+<body>
+  <h1>RAIN Method Helper</h1>
+  <p class="description">
+    Use this tool to work through the RAIN steps when you feel stuck or overwhelmed.
+  </p>
+
+  <form id="rainForm" onsubmit="return handleSubmit(event)" style="max-width: 600px; width: 100%; text-align: left;">
+    <label for="recognize">R - Recognize</label>
+    <textarea id="recognize" placeholder="What are you feeling or avoiding?"></textarea>
+
+    <label for="allow">A - Allow</label>
+    <textarea id="allow" placeholder="Allow the feelings without judgment."></textarea>
+
+    <label for="investigate">I - Investigate</label>
+    <textarea id="investigate" placeholder="What is underlying these feelings?"></textarea>
+
+    <label for="nonIdentify">N - Non-Identify</label>
+    <textarea id="nonIdentify" placeholder="Remember this feeling is not who you are."></textarea>
+
+    <button type="submit">Show My Responses</button>
+  </form>
+
+  <div id="output" class="output" style="display:none;"></div>
+
+  <a href="index.html" class="button">Back to Home</a>
+
+  <script>
+    function handleSubmit(event) {
+      event.preventDefault();
+      const recognize = document.getElementById('recognize').value.trim();
+      const allow = document.getElementById('allow').value.trim();
+      const investigate = document.getElementById('investigate').value.trim();
+      const nonIdentify = document.getElementById('nonIdentify').value.trim();
+
+      if (!recognize && !allow && !investigate && !nonIdentify) {
+        alert('Please fill in at least one field.');
+        return;
+      }
+
+      const outputText = 
+        `R - Recognize:\n${recognize || '(no response)'}\n\n` +
+        `A - Allow:\n${allow || '(no response)'}\n\n` +
+        `I - Investigate:\n${investigate || '(no response)'}\n\n` +
+        `N - Non-Identify:\n${nonIdentify || '(no response)'}\n`;
+
+      const outputDiv = document.getElementById('output');
+      outputDiv.textContent = outputText;
+      outputDiv.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
