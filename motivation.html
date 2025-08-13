@@ -7,13 +7,13 @@
 <link rel="stylesheet" href="style.css">
 <link href="https://fonts.googleapis.com/css2?family=Barriecito&family=Winky+Sans&display=swap" rel="stylesheet">
 <style>
-  body { font-family: 'Winky Sans', sans-serif; background-color: #fdf6e3; color: #1b3a2d; padding:20px; }
-  h1 { font-family: 'Barriecito', cursive; font-size:3rem; color:#ff9aa2; text-align:center; margin-bottom:20px; }
+  body { font-family: 'Winky Sans', sans-serif; background-color: #fdf6e3; color: #1b3a2d; padding:20px; text-align:center; }
+  h1 { font-family: 'Barriecito', cursive; font-size:3rem; color:#ff9aa2; margin-bottom:20px; }
   label { margin-left:8px; display:block; margin-bottom:10px; }
-  ul { list-style:none; padding:0; }
+  #motivationChecklist { list-style:none; padding:0; display:inline-block; text-align:left; }
   li { margin:10px 0; display:flex; align-items:center; }
   .reward { margin-left:30px; font-weight:bold; }
-  input[type="text"], select { margin-left:10px; }
+  select { margin-left:10px; }
   .special-reward { color:#ff6f61; font-weight:bold; font-size:1.2em; }
   .btn { background-color:#ff9aa2; color:#fdf6e3; border:none; padding:10px 15px; cursor:pointer; margin-top:10px; font-family:'Barriecito', cursive; display:block; margin-left:auto; margin-right:auto; }
 </style>
@@ -30,7 +30,6 @@
     <option value="laundry">Do Laundry</option>
     <option value="custom">Custom...</option>
   </select>
-  <input type="text" id="customTaskInput" placeholder="Enter custom task" style="display:none;">
 </label>
 
 <ul id="motivationChecklist"></ul>
@@ -50,8 +49,6 @@ const celebrationSound = document.getElementById('celebrationSound');
 const dingSound = document.getElementById('dingSound');
 
 const taskSelect = document.getElementById('taskSelect');
-const customTaskInput = document.getElementById('customTaskInput');
-
 const preRewards = ["Snack", "Break", "Watch a short video", "Coffee", "Song", "Stretch"];
 
 // Task templates
@@ -76,7 +73,7 @@ const taskTemplates = {
     {type:'task', text:'Scrub toilet'},
     {type:'reward', text:'Snack'},
     {type:'task', text:'Mop floor'},
-    {type:'reward', text:'Special reward', special:true}
+    {type:'reward', text:'', special:true}
   ],
   writeEssay: [
     {type:'task', text:'Outline essay'},
@@ -84,7 +81,7 @@ const taskTemplates = {
     {type:'task', text:'Write first draft'},
     {type:'reward', text:'Short video'},
     {type:'task', text:'Edit draft'},
-    {type:'reward', text:'Special reward', special:true}
+    {type:'reward', text:'', special:true}
   ],
   laundry: [
     {type:'task', text:'Sort clothes'},
@@ -92,13 +89,12 @@ const taskTemplates = {
     {type:'task', text:'Load washer'},
     {type:'reward', text:'Stretch'},
     {type:'task', text:'Fold laundry'},
-    {type:'reward', text:'Special reward', special:true}
+    {type:'reward', text:'', special:true}
   ]
 };
 
 let items = JSON.parse(JSON.stringify(taskTemplates['emptyDishwasher']));
 
-// Render checklist
 function renderChecklist(){
   checklistEl.innerHTML='';
   items.forEach((item,index)=>{
@@ -110,7 +106,6 @@ function renderChecklist(){
     if(item.type==='task'){
       checkbox.addEventListener('change', ()=>{
         item.checked = checkbox.checked;
-        localStorage.setItem('motivationItems', JSON.stringify(items));
         if(checkbox.checked){ celebrationSound.currentTime=0; celebrationSound.play().catch(err=>console.log(err)); }
       });
       li.appendChild(checkbox);
@@ -129,33 +124,25 @@ function renderChecklist(){
       customOption.textContent='Custom...';
       select.appendChild(customOption);
 
-      const input = document.createElement('input');
-      input.type='text';
-      input.placeholder='Enter custom reward';
-      input.style.display = preRewards.includes(item.text)?'none':'inline';
-      input.value = preRewards.includes(item.text)?'':item.text;
-
       select.addEventListener('change', ()=>{
-        if(select.value==='custom'){ input.style.display='inline'; item.text=input.value; }
-        else { input.style.display='none'; item.text=select.value; }
-        localStorage.setItem('motivationItems', JSON.stringify(items));
-      });
-
-      input.addEventListener('input', ()=>{
-        item.text = input.value;
-        localStorage.setItem('motivationItems', JSON.stringify(items));
+        if(select.value==='custom'){
+          const customReward = prompt("Enter custom reward:");
+          if(customReward) { item.text = customReward; select.options[select.selectedIndex].text = customReward; select.value = customReward; }
+          else select.value = '';
+        } else {
+          item.text = select.value;
+        }
+        renderChecklist();
       });
 
       checkbox.addEventListener('change', ()=>{
         item.checked = checkbox.checked;
-        localStorage.setItem('motivationItems', JSON.stringify(items));
         if(checkbox.checked){ dingSound.currentTime=0; dingSound.play().catch(err=>console.log(err)); }
       });
 
       li.appendChild(checkbox);
-      li.appendChild(document.createTextNode(' ' + (item.special?'Special Reward: ':'Reward: ')));
+      li.appendChild(document.createTextNode(' ' + (item.special?'TASK COMPLETED! FINAL REWARD!':'Reward: ')));
       li.appendChild(select);
-      li.appendChild(input);
     }
 
     if(item.special){ li.className='special-reward'; }
@@ -166,29 +153,32 @@ function renderChecklist(){
 // Handle task selection dropdown
 taskSelect.addEventListener('change', ()=>{
   if(taskSelect.value==='custom'){
-    customTaskInput.style.display='inline';
+    const customTask = prompt("Enter custom overall task name:");
     items = [];
   } else {
-    customTaskInput.style.display='none';
     items = JSON.parse(JSON.stringify(taskTemplates[taskSelect.value]));
   }
   renderChecklist();
 });
 
-// Custom task input
-customTaskInput.addEventListener('input', ()=>{
-  // Optional: save custom overall task name in localStorage
-  localStorage.setItem('motivationCustomTask', customTaskInput.value);
-});
-
-// Add custom step/reward buttons
+// Add custom step before final special reward
 document.getElementById('addTaskBtn').addEventListener('click', ()=>{
   const text = prompt("Enter step description:");
-  if(text){ items.push({type:'task', text:text, checked:false}); renderChecklist(); localStorage.setItem('motivationItems', JSON.stringify(items)); }
+  if(text){
+    let insertIndex = items.findIndex(i=>i.special) !== -1 ? items.findIndex(i=>i.special) : items.length;
+    items.splice(insertIndex,0,{type:'task', text:text, checked:false});
+    renderChecklist();
+  }
 });
+
+// Add custom reward before final special reward
 document.getElementById('addRewardBtn').addEventListener('click', ()=>{
   const text = prompt("Enter reward description:");
-  if(text){ items.push({type:'reward', text:text, checked:false}); renderChecklist(); localStorage.setItem('motivationItems', JSON.stringify(items)); }
+  if(text){
+    let insertIndex = items.findIndex(i=>i.special) !== -1 ? items.findIndex(i=>i.special) : items.length;
+    items.splice(insertIndex,0,{type:'reward', text:text, checked:false});
+    renderChecklist();
+  }
 });
 
 renderChecklist();
