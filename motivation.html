@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
           select.insertBefore(newOption, select.lastChild);
           select.value = input.value;
           input.remove();
-          select.style.display = '';
+          select.style.display='';
         });
         select.after(input);
         select.style.display='none';
@@ -162,32 +162,41 @@ document.addEventListener('DOMContentLoaded', () => {
     return select;
   }
 
-  function addStepWithReward(stepText='', rewardText='') {
-    // Step
-    if(stepText){
-      const stepDiv = document.createElement('div');
-      stepDiv.classList.add('check-item');
-      const stepCheckbox = document.createElement('input');
-      stepCheckbox.type='checkbox';
-      stepCheckbox.addEventListener('change', ()=>{ if(stepCheckbox.checked) celebrationSound.play(); });
-      const stepLabel = document.createElement('label');
-      stepLabel.textContent=stepText;
-      stepDiv.appendChild(stepCheckbox);
-      stepDiv.appendChild(stepLabel);
-      stepsContainer.insertBefore(stepDiv, document.getElementById('finalReward') || null);
-    }
-    // Reward
-    if(rewardText!==undefined){
-      const rewardDiv = document.createElement('div');
-      rewardDiv.classList.add('check-item');
-      const rewardCheckbox = document.createElement('input');
-      rewardCheckbox.type='checkbox';
-      rewardCheckbox.addEventListener('change', ()=>{ if(rewardCheckbox.checked) celebrationSound.play(); });
-      const rewardDropdown = createRewardDropdown(rewardText);
-      rewardDiv.appendChild(rewardCheckbox);
-      rewardDiv.appendChild(rewardDropdown);
-      stepsContainer.insertBefore(rewardDiv, document.getElementById('finalReward') || null);
-    }
+  function addStep(stepText) {
+    if (!stepText) return;
+    const stepDiv = document.createElement('div');
+    stepDiv.classList.add('check-item');
+
+    const stepCheckbox = document.createElement('input');
+    stepCheckbox.type = 'checkbox';
+    stepCheckbox.addEventListener('change', () => {
+      if(stepCheckbox.checked) celebrationSound.play();
+    });
+
+    const stepLabel = document.createElement('label');
+    stepLabel.textContent=stepText;
+
+    stepDiv.appendChild(stepCheckbox);
+    stepDiv.appendChild(stepLabel);
+
+    const final = document.getElementById('finalReward');
+    stepsContainer.insertBefore(stepDiv, final);
+  }
+
+  function addReward(rewardText='') {
+    const rewardDiv = document.createElement('div');
+    rewardDiv.classList.add('check-item');
+
+    const rewardCheckbox = document.createElement('input');
+    rewardCheckbox.type='checkbox';
+    rewardCheckbox.addEventListener('change', ()=>{ if(rewardCheckbox.checked) celebrationSound.play(); });
+
+    const rewardDropdown = createRewardDropdown(rewardText);
+    rewardDiv.appendChild(rewardCheckbox);
+    rewardDiv.appendChild(rewardDropdown);
+
+    const final = document.getElementById('finalReward');
+    stepsContainer.insertBefore(rewardDiv, final);
   }
 
   function addFinalReward(){
@@ -244,12 +253,12 @@ document.addEventListener('DOMContentLoaded', () => {
     stepsContainer.innerHTML='';
     const stepsArray = prefilledTasks[taskName] || [];
     stepsArray.forEach(item=>{
-      addStepWithReward(item.step, item.reward);
+      addStep(item.step);
+      if(item.reward) addReward(item.reward);
     });
     addFinalReward();
   }
 
-  // Task select
   taskSelect.addEventListener('change', ()=>{
     const selected = taskSelect.value;
     if(selected==='custom'){
@@ -263,17 +272,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Add Step
   document.getElementById('addStepBtn').addEventListener('click', ()=>{
     const name = prompt('Enter step name:');
     if(name && name.trim()!==''){
-      addStepWithReward(name.trim(), '');
+      addStep(name.trim());
     }
   });
 
-  // Add Reward
   document.getElementById('addRewardBtn').addEventListener('click', ()=>{
-    addStepWithReward('', '');
+    addReward();
   });
 
   // Load default
