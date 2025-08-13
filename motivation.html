@@ -41,7 +41,7 @@
     <option value="custom">Custom...</option>
   </select>
 </label>
-
+<h2 id="currentTaskName" style="text-align:center; margin-top:10px;"></h2>
 <ul id="motivationChecklist"></ul>
 
 <button id="addTaskBtn" class="btn">Add Custom Step</button>
@@ -218,14 +218,21 @@ function renderChecklist(){
 }
 
 // Handle task selection dropdown
-taskSelect.addEventListener('change', ()=>{
-  if(taskSelect.value==='custom'){
-    const customTask = prompt("Enter custom overall task name:");
-    items = [];
-  } else {
-    items = JSON.parse(JSON.stringify(taskTemplates[taskSelect.value]));
-  }
-  renderChecklist();
+taskSelect.addEventListener('change', () => {
+    let displayName = taskSelect.options[taskSelect.selectedIndex].text;
+
+    if (taskSelect.value === 'custom') {
+        const name = prompt('Enter custom overall task name:');
+        if (name && name.trim() !== '') {
+            displayName = name.trim();
+        }
+        items = []; // start with no steps for custom
+    } else {
+        items = JSON.parse(JSON.stringify(taskTemplates[taskSelect.value]));
+    }
+
+    document.getElementById('currentTaskName').textContent = displayName;
+    renderChecklist();
 });
 
 // Add custom step before final special reward
