@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SMART Goal Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Winky+Sans&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barriecito&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Winky Sans', Arial, sans-serif;
+      background: #FFF5E1;
+      color: #333;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    h1 {
+      font-family: 'Barriecito', cursive;
+      font-size: 4rem;
+      color: #E75480;
+      margin-bottom: 1rem;
+    }
+    p.description {
+      color: #145214;
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      max-width: 600px;
+    }
+    a.button {
+      background: #4a7c40;
+      color: #145214;
+      font-weight: bold;
+      text-decoration: none;
+      padding: 1.2rem 2.5rem;
+      border-radius: 8px;
+      font-size: 1.4rem;
+      transition: background 0.3s ease;
+      display: inline-block;
+      margin-top: 2rem;
+    }
+    a.button:hover {
+      background: #2e451d;
+      color: #a2d5a0;
+    }
+    /* Container for tool UI */
+    .tool-container {
+      max-width: 700px;
+      width: 100%;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>SMART Goal Builder</h1>
+  <p class="description">
+    Create clear, achievable SMART goals by filling out the fields below.
+  </p>
+
+  <div class="tool-container">
+    <!-- Tool UI goes here -->
+    <!-- Example inputs -->
+    <label for="specific">Specific:</label><br />
+    <input type="text" id="specific" placeholder="What exactly do you want to achieve?" style="width: 100%; padding: 8px; margin-bottom: 1rem;" />
+
+    <label for="measurable">Measurable:</label><br />
+    <input type="text" id="measurable" placeholder="How will you know when it’s done?" style="width: 100%; padding: 8px; margin-bottom: 1rem;" />
+
+    <label for="achievable">Achievable:</label><br />
+    <input type="text" id="achievable" placeholder="Is this realistic for you? What's the minimum you can achieve?" style="width: 100%; padding: 8px; margin-bottom: 1rem;" />
+
+    <label for="relevant">Relevant:</label><br />
+    <input type="text" id="relevant" placeholder="Why is this important?" style="width: 100%; padding: 8px; margin-bottom: 1rem;" />
+
+    <label for="timebound">Time-bound:</label><br />
+    <input type="text" id="timebound" placeholder="By when will you complete this?" style="width: 100%; padding: 8px; margin-bottom: 1rem;" />
+
+    <button onclick="showGoal()" style="background:#E75480; color:white; padding: 12px 20px; border:none; border-radius:8px; font-size:1.2rem; cursor:pointer;">
+      Build Goal
+    </button>
+
+    <p id="result" style="margin-top:1.5rem; font-weight:bold;"></p>
+  </div>
+
+  <a href="index.html" class="button">Back to Home</a>
+
+  <script>
+    function showGoal() {
+      const specific = document.getElementById('specific').value.trim();
+      const measurable = document.getElementById('measurable').value.trim();
+      const achievable = document.getElementById('achievable').value.trim();
+      const relevant = document.getElementById('relevant').value.trim();
+      const timebound = document.getElementById('timebound').value.trim();
+
+      if (!specific || !measurable || !achievable || !relevant || !timebound) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      const goal = `My SMART goal is to: ${specific}. This will look like: ${measurable}. At minimum be will be able to:  ${achievable}. This is important to me because ${relevant}, and I will complete it by ${timebound}.`;
+
+      document.getElementById('result').textContent = goal;
+    }
+  </script>
+</body>
+</html>
