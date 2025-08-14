@@ -4,187 +4,345 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Motivation Station</title>
+<link href="https://fonts.googleapis.com/css2?family=Barriecito&family=Winky+Sans&display=swap" rel="stylesheet">
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #fafafa;
-        margin: 0;
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-        color: #444;
-    }
-    .task {
-        background: #fff;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .step, .reward {
-        display: flex;
-        align-items: center;
-        margin-bottom: 8px;
-        background-color: #fff8d6; /* pastel yellow */
-        padding: 5px;
-        border-radius: 5px;
-        transition: background-color 0.4s ease;
-    }
-    .step.completed {
-        background-color: #d6f8d6; /* pastel green */
-    }
-    .reward.completed {
-        background-color: #d6e9f8; /* pastel blue */
-    }
-    button {
-        margin: 5px 0;
-        padding: 6px 12px;
-        border: none;
-        background-color: #4cafef;
-        color: white;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    button:hover {
-        background-color: #399fd9;
-    }
-    select, input[type="text"] {
-        margin-left: 10px;
-    }
+body {
+  background-color: #fff7e6; /* original background */
+  font-family: 'Winky Sans', sans-serif;
+  color: #1b3a2d;
+  text-align: center;
+  padding: 20px;
+}
+h1, h2 {
+  font-family: 'Barriecito', cursive; /* original heading font */
+  color: #ffb6a0;
+}
+#stepsContainer {
+  display: inline-block;
+  text-align: left;
+  margin-top: 20px;
+  min-width: 300px;
+}
+.step-container {
+  margin: 10px 0;
+  padding: 10px;
+  border-left: 3px solid #ffb6a0;
+  background-color: #ffeedd; /* pastel highlight */
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+.step-container.checked {
+  background-color: #d4ffd9; /* change when checked */
+}
+.check-item {
+  margin: 5px 0;
+}
+.check-item label {
+  margin-left: 6px;
+}
+select, input[type="text"] {
+  margin-left: 8px;
+  padding: 4px 6px;
+  font-family: 'Winky Sans', sans-serif;
+}
+.pink-btn {
+  background-color: #ffb6a0; /* original button color */
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  margin: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Winky Sans', sans-serif;
+}
+.pink-btn:hover {
+  background-color: #ffa089;
+}
+.green-btn {
+  background-color: #1b3a2d;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  margin: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Winky Sans', sans-serif;
+}
+.green-btn:hover {
+  background-color: #163026;
+}
+#buttonContainer {
+  margin-top: 20px;
+}
+#finalReward {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1.2em;
+  color: #ff6f61;
+}
 </style>
 </head>
 <body>
 
 <h1>Motivation Station</h1>
 
-<div id="tasks-container"></div>
+<label for="taskSelect">Choose Overall Task:</label>
+<select id="taskSelect">
+  <option value="Empty Dishwasher">Empty Dishwasher</option>
+  <option value="Clean Bathroom">Clean Bathroom</option>
+  <option value="Write an Essay">Write an Essay</option>
+  <option value="custom">Custom Task...</option>
+</select>
+
+<h2 id="currentTaskName">Empty Dishwasher</h2>
+
+<div id="stepsContainer"></div>
+
+<div id="buttonContainer">
+  <button id="addStepBtn" class="pink-btn">Add Step</button>
+  <button id="addRewardBtn" class="pink-btn">Add Reward</button>
+  <button id="homeBtn" class="green-btn" onclick="window.location.href='index.html'">Back to Home</button>
+</div>
+
+<audio id="celebrationSound" src="click.mp3"></audio>
 
 <script>
-const tasksData = [
-    {
-        title: "Clean My Room",
-        steps: ["Pick up clothes", "Make the bed", "Vacuum the floor"],
-    },
-    {
-        title: "Write an Essay",
-        steps: [
-            "Write a plan/outline",
-            "Write the first sentence",
-            "Write an introduction",
-            "Write the first paragraph",
-            "Write another paragraph",
-            "Write a conclusion"
-        ],
-    },
-    {
-        title: "Study for a Test",
-        steps: ["Review notes", "Make flashcards", "Practice problems"],
-    }
-];
+document.addEventListener('DOMContentLoaded', () => {
+  const taskSelect = document.getElementById('taskSelect');
+  const currentTaskNameEl = document.getElementById('currentTaskName');
+  const stepsContainer = document.getElementById('stepsContainer');
+  const celebrationSound = document.getElementById('celebrationSound');
 
-function createTask(task) {
-    const taskDiv = document.createElement('div');
-    taskDiv.className = 'task';
+  const prefilledTasks = {
+    "Empty Dishwasher": [
+      { step: 'Put cutlery away', reward: 'Listen to a song' },
+      { step: 'Put plates away', reward: 'Watch a short YouTube video' },
+      { step: 'Put bowls away', reward: '3 minute social media scroll' },
+      { step: 'Put cups/glasses away', reward: '' },
+      { step: 'Put mugs away', reward: '' },
+      { step: 'Put remaining dishes away', reward: '' }
+    ],
+    "Clean Bathroom": [
+      { step: 'Scrub sink', reward: 'Drink a coffee' },
+      { step: 'Clean toilet', reward: 'Stretch for 3 mins' },
+      { step: 'Wipe mirror', reward: '' },
+      { step: 'Mop floor', reward: '' }
+    ],
+    "Write an Essay": [
+      { step: 'Write a plan/outline', reward: '' },
+      { step: 'Write the first sentence', reward: '' },
+      { step: 'Write an introduction', reward: '' },
+      { step: 'Write the first paragraph', reward: '' },
+      { step: 'Write another paragraph', reward: '' },
+      { step: 'Write a conclusion', reward: '' }
+    ]
+  };
 
-    const title = document.createElement('h2');
-    title.textContent = task.title;
-    taskDiv.appendChild(title);
+  const rewardOptions = [
+    'Listen to a song',
+    'Watch a short YouTube video',
+    '3 minute social media scroll',
+    'Eat a snack',
+    'Take a short walk',
+    'Custom reward'
+  ];
 
-    task.steps.forEach(stepText => {
-        const stepDiv = createStep(stepText);
-        taskDiv.appendChild(stepDiv);
-        const rewardDiv = createReward();
-        taskDiv.appendChild(rewardDiv);
-    });
+  const bigRewardOptions = [
+    'Watch an episode',
+    'Go for a walk',
+    'Listen to an album',
+    'Dance',
+    'Relax on the couch',
+    'Eat something yum',
+    'Custom reward'
+  ];
 
-    const addStepBtn = document.createElement('button');
-    addStepBtn.textContent = 'Add Step';
-    addStepBtn.onclick = () => {
-        const newStep = createStep("New step...");
-        taskDiv.insertBefore(newStep, finalReward);
-        const newReward = createReward();
-        taskDiv.insertBefore(newReward, finalReward);
-    };
-    taskDiv.appendChild(addStepBtn);
-
-    const finalReward = document.createElement('div');
-    finalReward.className = 'reward';
-    const finalLabel = document.createElement('label');
-    finalLabel.textContent = 'Big Final Reward:';
-    const finalInput = document.createElement('input');
-    finalInput.type = 'text';
-    finalInput.placeholder = 'Enter big reward...';
-    finalReward.appendChild(finalLabel);
-    finalReward.appendChild(finalInput);
-    taskDiv.appendChild(finalReward);
-
-    return taskDiv;
-}
-
-function createStep(text) {
-    const stepDiv = document.createElement('div');
-    stepDiv.className = 'step';
-
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.onchange = () => {
-        stepDiv.classList.toggle('completed', checkbox.checked);
-    };
-
-    const stepText = document.createElement('input');
-    stepText.type = 'text';
-    stepText.value = text;
-
-    stepDiv.appendChild(checkbox);
-    stepDiv.appendChild(stepText);
-
-    return stepDiv;
-}
-
-function createReward() {
-    const rewardDiv = document.createElement('div');
-    rewardDiv.className = 'reward';
-
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.onchange = () => {
-        rewardDiv.classList.toggle('completed', checkbox.checked);
-    };
-
+  function createRewardDropdown(initialText='') {
     const select = document.createElement('select');
-    ["Choose reward", "Snack", "5 min break", "Custom"].forEach(optionText => {
-        const option = document.createElement('option');
-        option.value = optionText;
-        option.textContent = optionText;
-        select.appendChild(option);
+    rewardOptions.forEach(opt=>{
+      const option = document.createElement('option');
+      option.value = opt;
+      option.textContent = opt;
+      if(opt === initialText) option.selected = true;
+      select.appendChild(option);
+    });
+    select.addEventListener('change', ()=>{
+      if(select.value==='Custom reward'){
+        const input = document.createElement('input');
+        input.type='text';
+        input.placeholder='Enter your reward';
+        input.style.marginLeft='10px';
+        input.addEventListener('change', ()=>{
+          const newOption = document.createElement('option');
+          newOption.value = input.value;
+          newOption.textContent = input.value;
+          select.insertBefore(newOption, select.lastChild);
+          select.value = input.value;
+          input.remove();
+          select.style.display='';
+        });
+        select.after(input);
+        select.style.display='none';
+        input.focus();
+      }
+    });
+    return select;
+  }
+
+  function addStep(stepText, rewardText='') {
+    if (!stepText) return;
+
+    const stepContainer = document.createElement('div');
+    stepContainer.classList.add('step-container');
+
+    const stepDiv = document.createElement('div');
+    stepDiv.classList.add('check-item');
+
+    const stepCheckbox = document.createElement('input');
+    stepCheckbox.type = 'checkbox';
+    stepCheckbox.addEventListener('change', () => {
+      if(stepCheckbox.checked) {
+        celebrationSound.play();
+        stepContainer.classList.add('checked');
+      } else {
+        stepContainer.classList.remove('checked');
+      }
     });
 
-    const customInput = document.createElement('input');
-    customInput.type = 'text';
-    customInput.placeholder = 'Custom reward...';
-    customInput.style.display = 'none';
+    const stepLabel = document.createElement('label');
+    stepLabel.textContent = stepText;
 
-    select.onchange = () => {
-        customInput.style.display = select.value === "Custom" ? 'inline-block' : 'none';
-    };
+    stepDiv.appendChild(stepCheckbox);
+    stepDiv.appendChild(stepLabel);
+    stepContainer.appendChild(stepDiv);
 
-    rewardDiv.appendChild(checkbox);
-    rewardDiv.appendChild(select);
-    rewardDiv.appendChild(customInput);
+    if (rewardText !== null) {
+      const rewardDiv = document.createElement('div');
+      rewardDiv.classList.add('check-item');
+      const rewardCheckbox = document.createElement('input');
+      rewardCheckbox.type='checkbox';
+      rewardCheckbox.addEventListener('change', ()=>{
+        if(rewardCheckbox.checked) celebrationSound.play();
+      });
+      const rewardDropdown = createRewardDropdown(rewardText);
+      rewardDiv.appendChild(rewardCheckbox);
+      rewardDiv.appendChild(rewardDropdown);
+      stepContainer.appendChild(rewardDiv);
+    }
 
-    return rewardDiv;
-}
+    const final = document.getElementById('finalReward');
+    if(final){
+      stepsContainer.insertBefore(stepContainer, final);
+    } else {
+      stepsContainer.appendChild(stepContainer);
+    }
+  }
 
-function init() {
-    const container = document.getElementById('tasks-container');
-    tasksData.forEach(task => {
-        container.appendChild(createTask(task));
+  function addFinalReward(){
+    let existing = document.getElementById('finalReward');
+    if(existing) existing.remove();
+
+    const finalContainer = document.createElement('div');
+    finalContainer.id='finalReward';
+    finalContainer.style.textAlign='center';
+    finalContainer.style.marginTop='20px';
+
+    const finalText = document.createElement('h3');
+    finalText.textContent='Task completed! GO YOU!!';
+    finalContainer.appendChild(finalText);
+
+    const bigDiv = document.createElement('div');
+    bigDiv.classList.add('check-item');
+    const bigCheckbox = document.createElement('input');
+    bigCheckbox.type='checkbox';
+    bigCheckbox.addEventListener('change', ()=>{ if(bigCheckbox.checked) celebrationSound.play(); });
+
+    const bigDropdown = document.createElement('select');
+    bigRewardOptions.forEach(opt=>{
+      const option = document.createElement('option');
+      option.value = opt;
+      option.textContent = opt;
+      bigDropdown.appendChild(option);
     });
-}
+    bigDropdown.addEventListener('change', ()=>{
+      if(bigDropdown.value==='Custom reward'){
+        const input = document.createElement('input');
+        input.type='text';
+        input.placeholder='Enter your reward';
+        input.style.marginLeft='10px';
+        input.addEventListener('change', ()=>{
+          const newOption = document.createElement('option');
+          newOption.value = input.value;
+          newOption.textContent = input.value;
+          bigDropdown.insertBefore(newOption, bigDropdown.lastChild);
+          bigDropdown.value = input.value;
+          input.remove();
+          bigDropdown.style.display='';
+        });
+        bigDropdown.after(input);
+        bigDropdown.style.display='none';
+        input.focus();
+      }
+    });
 
-init();
+    bigDiv.appendChild(bigCheckbox);
+    bigDiv.appendChild(bigDropdown);
+    finalContainer.appendChild(bigDiv);
+    stepsContainer.appendChild(finalContainer);
+  }
+
+  function renderChecklist(taskName){
+    stepsContainer.innerHTML='';
+    const stepsArray = prefilledTasks[taskName] || [];
+    stepsArray.forEach(item=>{
+      addStep(item.step, item.reward);
+    });
+    addFinalReward();
+  }
+
+  taskSelect.addEventListener('change', ()=>{
+    const selected = taskSelect.value;
+    if(selected==='custom'){
+      const name = prompt('Enter custom task name:');
+      currentTaskNameEl.textContent = name && name.trim() ? name.trim() : 'Custom Task';
+      stepsContainer.innerHTML='';
+      addFinalReward();
+    }else{
+      currentTaskNameEl.textContent = selected;
+      renderChecklist(selected);
+    }
+  });
+
+  document.getElementById('addStepBtn').addEventListener('click', ()=>{
+    const name = prompt('Enter step name:');
+    if(name && name.trim()!==''){
+      addStep(name.trim(), null); // no reward by default
+    }
+  });
+
+  document.getElementById('addRewardBtn').addEventListener('click', ()=>{
+    const stepContainers = stepsContainer.querySelectorAll('.step-container');
+    if(stepContainers.length === 0) return;
+    const lastStep = stepContainers[stepContainers.length -1];
+    const rewardDiv = document.createElement('div');
+    rewardDiv.classList.add('check-item');
+
+    const rewardCheckbox = document.createElement('input');
+    rewardCheckbox.type='checkbox';
+    rewardCheckbox.addEventListener('change', ()=>{
+      if(rewardCheckbox.checked) celebrationSound.play();
+    });
+
+    const rewardDropdown = createRewardDropdown();
+    rewardDiv.appendChild(rewardCheckbox);
+    rewardDiv.appendChild(rewardDropdown);
+
+    lastStep.appendChild(rewardDiv);
+  });
+
+  // Load default task
+  renderChecklist('Empty Dishwasher');
+});
 </script>
-
 </body>
 </html>
