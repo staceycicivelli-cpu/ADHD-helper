@@ -85,8 +85,8 @@ select, input[type="text"] {
 <body>
 
 <h1>Motivation Station</h1>
-
-<label for="taskSelect">Choose Overall Task:</label>
+<p class="description">Break big goals into small steps and celebrate each win! Start with a ready-made task or build your own from scratch, adding custom steps and rewards/treats - whatever gets you from stuck to smiling. </p>
+<label for="taskSelect">Choose Your Task:</label>
 <select id="taskSelect">
   <option value="Empty Dishwasher">Empty Dishwasher</option>
   <option value="Clean Bathroom">Clean Bathroom</option>
@@ -104,7 +104,7 @@ select, input[type="text"] {
   <button id="homeBtn" class="green-btn" onclick="window.location.href='index.html'">Back to Home</button>
 </div>
 
-<audio id="celebrationSound" src="click.mp3"></audio>
+<audio id="celebrationSound" src="cheer.mp3"></audio>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const prefilledTasks = {
     "Empty Dishwasher": [
-      { step: 'Put cutlery away', reward: 'Listen to a song' },
+      { step: 'Put cutlery away', reward: 'Listen to music' },
       { step: 'Put plates away', reward: 'Watch a short YouTube video' },
       { step: 'Put bowls away', reward: '3 minute social media scroll' },
       { step: 'Put cups/glasses away', reward: '' },
@@ -123,8 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
       { step: 'Put remaining dishes away', reward: '' }
     ],
     "Clean Bathroom": [
-      { step: 'Scrub sink', reward: 'Drink a coffee' },
-      { step: 'Clean toilet', reward: 'Stretch for 3 mins' },
+      { step: 'Scrub sink', reward: 'Coffee Break' },
+      { step: 'Clean toilet', reward: '5 minute stretch session' },
       { step: 'Wipe mirror', reward: '' },
       { step: 'Mop floor', reward: '' }
     ],
@@ -139,11 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const rewardOptions = [
-    'Listen to a song',
+    'Listen to music',
     'Watch a short YouTube video',
     '3 minute social media scroll',
     'Eat a snack',
-    'Take a short walk',
+    'Coffee break',
+    '5 minute stretch session',
     'Custom reward'
   ];
 
@@ -154,6 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
     'Dance',
     'Relax on the couch',
     'Eat something yum',
+    'Nap time',
+    'Video games',
     'Custom reward'
   ];
 
