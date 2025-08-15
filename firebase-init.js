@@ -1,8 +1,7 @@
-// firebase-init.js
-import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js";
+// Initialize Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js";
 
-// Firebase config — replace with your own if different
 const firebaseConfig = {
   apiKey: "AIzaSyA8GxsEaNuijjz1ZGmKJOBkfuAAf6N3czo",
   authDomain: "adhd-easy-mode.firebaseapp.com",
@@ -15,34 +14,23 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const messaging = getMessaging(app);
+const messaging = getMessaging(app);
 
-// Request permission and get FCM token
+// Request notification permission
 export async function requestFirebasePermission() {
   try {
     const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
-      const currentToken = await getToken(messaging, { vapidKey: "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0" });
-      console.log('FCM token:', currentToken);
+    if (permission === "granted") {
+      console.log("Notification permission granted.");
+      // Get FCM token
+      const token = await getToken(messaging, { vapidKey: "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0" });
+      console.log("FCM Token:", token);
     } else {
-      console.log('Notification permission denied.');
+      console.log("Notification permission denied.");
     }
   } catch (err) {
-    console.error('FCM permission error:', err);
+    console.error("Error getting permission:", err);
   }
 }
 
-// Optional: foreground messages
-onMessage(messaging, (payload) => {
-  console.log('Foreground message received:', payload);
-  if (Notification.permission === 'granted') {
-    navigator.serviceWorker.ready.then(registration => {
-      registration.showNotification(payload.notification.title, {
-        body: payload.notification.body,
-        icon: '/icons/icon-192.png',
-        badge: '/icons/badge-72.png',
-        vibrate: [100,50,100]
-      });
-    });
-  }
-});
+export { messaging, onMessage };
