@@ -25,7 +25,7 @@ async function requestFirebasePermission() {
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+      const token = await getToken(messaging, { vapidKey: BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0 });
       console.log("FCM token:", token);
       // You can send this token to your server here if needed
       return token;
@@ -38,3 +38,4 @@ async function requestFirebasePermission() {
 }
 
 export { messaging, requestFirebasePermission };
+
