@@ -94,3 +94,8 @@ document.querySelectorAll('.snooze-btn').forEach((btn, i) => {
 
 // Start everything
 initNotifications();
+document.getElementById('testNotifBtn').addEventListener('click', () => {
+    sendLocalNotification(0); // 0 = first notification
+});
+
+
