@@ -1,5 +1,5 @@
 // landing-page.js
-import { messaging, requestFirebasePermission } from './firebase-init.js';
+import { messaging, requestFirebasePermission } from '.firebase-init.js';
 
 // Default notification times
 let notificationTimes = [
@@ -85,3 +85,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
