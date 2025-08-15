@@ -21,10 +21,11 @@ messaging.onBackgroundMessage(function(payload) {
   const notificationTitle = payload.notification?.title || "Hey friend!";
   const notificationOptions = {
     body: payload.notification?.body || "Need any help?",
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/badge-72.png',
+    icon: 'icons/icon-192.png',
+    badge: 'icons/badge-72.png',
     vibrate: [100, 50, 100]
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
+
