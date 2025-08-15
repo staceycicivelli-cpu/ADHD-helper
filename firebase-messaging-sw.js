@@ -2,7 +2,7 @@
 importScripts('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js');
 
-const firebaseConfig = { 
+firebase.initializeApp{ 
   apiKey: "AIzaSyA8GxsEaNuijjz1ZGmKJOBkfuAAf6N3czo",
   authDomain: "adhd-easy-mode.firebaseapp.com",
   projectId: "adhd-easy-mode",
@@ -24,4 +24,5 @@ messaging.onBackgroundMessage(function(payload) {
 
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
+
  
