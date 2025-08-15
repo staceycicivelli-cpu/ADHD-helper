@@ -1,9 +1,9 @@
 // firebase-init.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js";
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
+// --- Your Firebase config ---
+const firebaseConfig = { 
   apiKey: "AIzaSyA8GxsEaNuijjz1ZGmKJOBkfuAAf6N3czo",
   authDomain: "adhd-easy-mode.firebaseapp.com",
   projectId: "adhd-easy-mode",
@@ -13,30 +13,46 @@ const firebaseConfig = {
   measurementId: "G-2RC70GV6HS"
 };
 
-// Initialize Firebase
+// Initialize Firebase app
 const app = initializeApp(firebaseConfig);
+
+// Initialize messaging
 const messaging = getMessaging(app);
 
-// Ask permission and get FCM token
+// --- Request notification permission and get FCM token ---
 export async function requestFirebasePermission() {
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      const token = await getToken(messaging, {
-        vapidKey: "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0" // from Firebase project settings (Cloud Messaging)
+      console.log('Notification permission granted.');
+
+      const currentToken = await getToken(messaging, {
+        vapidKey: 'BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0'
       });
-      console.log("FCM Token:", token);
+
+      if (currentToken) {
+        console.log('FCM Token:', currentToken);
+        // You can send this token to your server to send push messages later
+      } else {
+        console.log('No registration token available. Request permission to generate one.');
+      }
     } else {
-      console.warn("Notification permission not granted.");
+      console.log('Notification permission denied.');
     }
   } catch (err) {
-    console.error("Error getting permission or token:", err);
+    console.error('An error occurred while requesting notification permission:', err);
   }
 }
 
-// Optional: handle foreground messages
+// --- Listen for messages while the page is in the foreground ---
 onMessage(messaging, (payload) => {
-  console.log("Message received in foreground:", payload);
+  console.log('Message received in foreground:', payload);
+  if (Notification.permission === 'granted') {
+    new Notification(payload.notification.title, {
+      body: payload.notification.body,
+      icon: '/icons/icon-192x192.png'
+    });
+  }
 });
 
 export { messaging };
