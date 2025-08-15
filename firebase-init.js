@@ -1,9 +1,9 @@
-// Initialize Firebase
+// firebase-init.js
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
-// Your Firebase config
-const firebaseConfig = { 
+// Firebase config — replace with your own if different
+const firebaseConfig = {
   apiKey: "AIzaSyA8GxsEaNuijjz1ZGmKJOBkfuAAf6N3czo",
   authDomain: "adhd-easy-mode.firebaseapp.com",
   projectId: "adhd-easy-mode",
@@ -13,22 +13,36 @@ const firebaseConfig = {
   measurementId: "G-2RC70GV6HS"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
-
-const VAPID_KEY = "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0";
+export const messaging = getMessaging(app);
 
 // Request permission and get FCM token
-async function requestFirebasePermission() {
+export async function requestFirebasePermission() {
   try {
     const permission = await Notification.requestPermission();
-    if(permission !== 'granted') throw new Error('Permission not granted');
-    const token = await getToken(messaging, { vapidKey: VAPID_KEY });
-    console.log('FCM token:', token);
-    return token;
+    if (permission === 'granted') {
+      const currentToken = await getToken(messaging, { vapidKey: "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0" });
+      console.log('FCM token:', currentToken);
+    } else {
+      console.log('Notification permission denied.');
+    }
   } catch (err) {
     console.error('FCM permission error:', err);
   }
 }
 
-export { messaging, requestFirebasePermission };
+// Optional: foreground messages
+onMessage(messaging, (payload) => {
+  console.log('Foreground message received:', payload);
+  if (Notification.permission === 'granted') {
+    navigator.serviceWorker.ready.then(registration => {
+      registration.showNotification(payload.notification.title, {
+        body: payload.notification.body,
+        icon: '/icons/icon-192.png',
+        badge: '/icons/badge-72.png',
+        vibrate: [100,50,100]
+      });
+    });
+  }
+});
