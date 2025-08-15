@@ -1,27 +1,44 @@
+// landing-page.js
 import { messaging, requestFirebasePermission } from './firebase-init.js';
 
 // Default notification times
 let notificationTimes = [
   { hour: 8, minute: 0 },
   { hour: 13, minute: 0 },
-  { hour: 18, minute: 0 }
-  { hour: 21, minute: 0 }
+  { hour: 18, minute: 0 },
+  { hour: 21, minute: 0 } // 9 PM
 ];
 
 let scheduledTimeouts = [];
 
+// Initialize notifications on page load
 async function initNotifications() {
+  if ('serviceWorker' in navigator) {
+    try {
+      await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      console.log('Service Worker registered.');
+    } catch (err) {
+      console.error('Service Worker registration failed:', err);
+    }
+  }
+
   await requestFirebasePermission();
   scheduleAllNotifications();
 }
 
+// Schedule all notifications
 function scheduleAllNotifications() {
-  scheduledTimeouts.forEach(t => clearTimeout(t));
+  // Clear previous schedules
+  scheduledTimeouts.forEach(t => {
+    clearTimeout(t);
+    clearInterval(t);
+  });
   scheduledTimeouts = [];
 
   notificationTimes.forEach((time, i) => scheduleNotification(time.hour, time.minute, i));
 }
 
+// Schedule a single notification
 function scheduleNotification(hour, minute, index) {
   const now = new Date();
   let next = new Date();
@@ -32,12 +49,14 @@ function scheduleNotification(hour, minute, index) {
 
   const timeoutId = setTimeout(() => {
     sendLocalNotification(index);
+    // Repeat every 24h
     scheduledTimeouts[index] = setInterval(() => sendLocalNotification(index), 24 * 60 * 60 * 1000);
   }, delay);
 
   scheduledTimeouts[index] = timeoutId;
 }
 
+// Send notification
 function sendLocalNotification(index) {
   if (Notification.permission === 'granted') {
     navigator.serviceWorker.ready.then(registration => {
@@ -45,54 +64,33 @@ function sendLocalNotification(index) {
         body: "Need any help?",
         icon: '/icons/icon-192x192.png',
         badge: '/icons/badge-72x72.png',
-        vibrate: [100,50,100],
+        vibrate: [100, 50, 100],
         tag: `reminder-${index}`
       });
     });
   }
 }
 
+// Snooze a notification for 1 hour
 function snoozeNotification(index) {
   clearTimeout(scheduledTimeouts[index]);
   clearInterval(scheduledTimeouts[index]);
-  scheduledTimeouts[index] = setTimeout(() => sendLocalNotification(index), 60*60*1000);
+  scheduledTimeouts[index] = setTimeout(() => sendLocalNotification(index), 60 * 60 * 1000);
 }
 
-// Hook snooze buttons and time inputs (like previous example)
-document.querySelectorAll('.notif-time-input').forEach((input,i)=>{
-  input.value = `${notificationTimes[i].hour.toString().padStart(2,'0')}:${notificationTimes[i].minute.toString().padStart(2,'0')}`;
-  input.addEventListener('change', ()=>{
-    const [h,m] = input.value.split(':').map(Number);
-    notificationTimes[i] = {hour:h, minute:m};
+// Hook up snooze buttons and time inputs if you have them
+document.querySelectorAll('.notif-time-input').forEach((input, i) => {
+  input.value = `${notificationTimes[i].hour.toString().padStart(2, '0')}:${notificationTimes[i].minute.toString().padStart(2, '0')}`;
+  input.addEventListener('change', () => {
+    const [h, m] = input.value.split(':').map(Number);
+    notificationTimes[i] = { hour: h, minute: m };
     scheduleAllNotifications();
   });
 });
 
-document.querySelectorAll('.snooze-btn').forEach((btn,i)=>{
-  btn.addEventListener('click', ()=>snoozeNotification(i));
+document.querySelectorAll('.snooze-btn').forEach((btn, i) => {
+  btn.addEventListener('click', () => snoozeNotification(i));
 });
 
-// Start notifications on page load
+// Start everything
 initNotifications();
-
-// Test notification in 10 seconds
-async function testNotification() {
-  await requestFirebasePermission(); // Make sure user has granted permission
-
-  setTimeout(() => {
-    if (Notification.permission === 'granted') {
-      navigator.serviceWorker.ready.then(registration => {
-        registration.showNotification("Hey friend!", {
-          body: "This is a test notification",
-          icon: '/icons/icon-192x192.png',
-          badge: '/icons/badge-72x72.png',
-          vibrate: [100,50,100],
-          tag: 'test-notification'
-        });
-      });
-    }
-  }, 10000); // 10 seconds
-}
-
-// Call it on page load
-testNotification();
