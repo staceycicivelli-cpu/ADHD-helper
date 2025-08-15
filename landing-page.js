@@ -98,5 +98,28 @@ document.getElementById('testNotifBtn').addEventListener('click', () => {
     sendLocalNotification(0); // 0 = first notification
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+  // Existing code...
+
+  const testBtn = document.getElementById('testNotifBtn');
+  if (testBtn) {
+    testBtn.addEventListener('click', async () => {
+      if (Notification.permission !== 'granted') {
+        alert('You must allow notifications first!');
+        return;
+      }
+
+      const registration = await navigator.serviceWorker.ready;
+      registration.showNotification("Hey friend!", {
+        body: "Need any help?",
+        icon: '/icons/icon-192x192.png',
+        badge: '/icons/badge-72x72.png',
+        vibrate: [100, 50, 100],
+        tag: 'test-notification'
+      });
+    });
+  }
+});
+
 
 
