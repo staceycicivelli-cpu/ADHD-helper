@@ -1,8 +1,7 @@
 // firebase-init.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js";
+import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js';
 
-// Your Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyA8GxsEaNuijjz1ZGmKJOBkfuAAf6N3czo",
   authDomain: "adhd-easy-mode.firebaseapp.com",
@@ -13,23 +12,33 @@ const firebaseConfig = {
   measurementId: "G-2RC70GV6HS"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const messaging = getMessaging(app);
+const messaging = getMessaging(app);
 
-// Request permission and get FCM token
+const VAPID_KEY = "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0";
+
+// Request permission and get token
 export async function requestFirebasePermission() {
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      const token = await getToken(messaging, { vapidKey: "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0" });
-      console.log("FCM Token:", token);
-      // Send token to your server if you want to schedule messages from Firebase
+      const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+      console.log('FCM Token:', token);
     } else {
-      console.warn("Notification permission not granted.");
+      console.log('Notification permission denied');
     }
   } catch (err) {
-    console.error("FCM permission error:", err);
+    console.error('Error getting FCM token', err);
   }
 }
 
+// Handle messages while app is in foreground
+onMessage(messaging, payload => {
+  console.log('Foreground message received: ', payload);
+  new Notification(payload.notification.title, {
+    body: payload.notification.body,
+    icon: '/icons/icon-192x192.png'
+  });
+});
+
+export { messaging };
