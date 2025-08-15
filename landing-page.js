@@ -1,4 +1,5 @@
-import { messaging, requestFirebasePermission } from '.firebase-init.js';
+// landing-page.js
+import { messaging, requestFirebasePermission } from './firebase-init.js';
 
 // Default notification times
 let notificationTimes = [
@@ -10,14 +11,14 @@ let notificationTimes = [
 
 let scheduledTimeouts = [];
 
-// Register service worker and initialize notifications
+// Register service worker and initialize FCM
 async function initNotifications() {
   if ('serviceWorker' in navigator) {
     try {
       await navigator.serviceWorker.register('firebase-messaging-sw.js');
-      console.log('Service Worker registered.');
+      console.log("Service worker registered");
     } catch (err) {
-      console.error('Service Worker registration failed:', err);
+      console.error("Service worker registration failed:", err);
     }
   }
 
@@ -27,16 +28,11 @@ async function initNotifications() {
 
 // Schedule all notifications
 function scheduleAllNotifications() {
-  scheduledTimeouts.forEach(t => {
-    clearTimeout(t);
-    clearInterval(t);
-  });
+  scheduledTimeouts.forEach(t => { clearTimeout(t); clearInterval(t); });
   scheduledTimeouts = [];
-
   notificationTimes.forEach((time, i) => scheduleNotification(time.hour, time.minute, i));
 }
 
-// Schedule a single notification
 function scheduleNotification(hour, minute, index) {
   const now = new Date();
   let next = new Date();
@@ -53,7 +49,6 @@ function scheduleNotification(hour, minute, index) {
   scheduledTimeouts[index] = timeoutId;
 }
 
-// Send notification via Service Worker
 function sendLocalNotification(index) {
   if (Notification.permission === 'granted') {
     navigator.serviceWorker.ready.then(registration => {
@@ -68,20 +63,15 @@ function sendLocalNotification(index) {
   }
 }
 
-// Snooze function
-function snoozeNotification(index) {
-  clearTimeout(scheduledTimeouts[index]);
-  clearInterval(scheduledTimeouts[index]);
-  scheduledTimeouts[index] = setTimeout(() => sendLocalNotification(index), 60*60*1000);
-}
-
 // Test notification button
 document.addEventListener('DOMContentLoaded', () => {
+  initNotifications();
+
   const testBtn = document.getElementById('testNotifBtn');
   if (testBtn) {
     testBtn.addEventListener('click', async () => {
       if (Notification.permission !== 'granted') {
-        alert('You must allow notifications first!');
+        alert("You must allow notifications first!");
         return;
       }
       const registration = await navigator.serviceWorker.ready;
@@ -94,9 +84,4 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
-
-  // Initialize notifications
-  initNotifications();
 });
-
-
