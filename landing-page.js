@@ -59,7 +59,7 @@ function sendLocalNotification(index) {
     navigator.serviceWorker.ready.then(registration => {
       registration.showNotification("Hey friend!", {
         body: "Need any help?",
-        icon: '/icons/icon-192x192.png',
+        icon: '/icons/icon-192.png',
         badge: '/icons/badge-72.png',
         vibrate: [100,50,100],
         tag: `reminder-${index}`
@@ -98,3 +98,4 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize notifications
   initNotifications();
 });
+
