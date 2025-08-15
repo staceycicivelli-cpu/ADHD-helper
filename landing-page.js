@@ -1,4 +1,4 @@
-import { messaging, requestFirebasePermission } from './firebase-init.js';
+import { messaging, requestFirebasePermission } from '.firebase-init.js';
 
 // Default notification times
 let notificationTimes = [
@@ -14,7 +14,7 @@ let scheduledTimeouts = [];
 async function initNotifications() {
   if ('serviceWorker' in navigator) {
     try {
-      await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      await navigator.serviceWorker.register('firebase-messaging-sw.js');
       console.log('Service Worker registered.');
     } catch (err) {
       console.error('Service Worker registration failed:', err);
@@ -59,8 +59,8 @@ function sendLocalNotification(index) {
     navigator.serviceWorker.ready.then(registration => {
       registration.showNotification("Hey friend!", {
         body: "Need any help?",
-        icon: '/icons/icon-192.png',
-        badge: '/icons/badge-72.png',
+        icon: 'icons/icon-192.png',
+        badge: 'icons/badge-72.png',
         vibrate: [100,50,100],
         tag: `reminder-${index}`
       });
@@ -87,8 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const registration = await navigator.serviceWorker.ready;
       registration.showNotification("Hey friend!", {
         body: "Need any help?",
-        icon: '/icons/icon-192x192.png',
-        badge: '/icons/badge-72.png',
+        icon: 'icons/icon-192.png',
+        badge: 'icons/badge-72.png',
         vibrate: [100,50,100],
         tag: 'test-notification'
       });
@@ -98,4 +98,5 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize notifications
   initNotifications();
 });
+
 
