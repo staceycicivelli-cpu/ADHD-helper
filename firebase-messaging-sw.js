@@ -1,8 +1,7 @@
-// firebase-messaging-sw.js
 importScripts('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js');
 
-const firebaseConfig = { 
+firebase.initializeApp({
   apiKey: "AIzaSyA8GxsEaNuijjz1ZGmKJOBkfuAAf6N3czo",
   authDomain: "adhd-easy-mode.firebaseapp.com",
   projectId: "adhd-easy-mode",
@@ -10,15 +9,12 @@ const firebaseConfig = {
   messagingSenderId: "549461875846",
   appId: "1:549461875846:web:a671b543824fd8439c0507",
   measurementId: "G-2RC70GV6HS"
-};
-
-firebase.initializeApp(firebaseConfig);
+});
 
 const messaging = firebase.messaging();
 
-// Background push notifications
-messaging.onBackgroundMessage(payload => {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+messaging.onBackgroundMessage(function(payload) {
+  console.log('[firebase-messaging-sw.js] Received background message', payload);
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
