@@ -1,9 +1,9 @@
 // firebase-init.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js";
+import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js";
 
-// --- Your Firebase config ---
-const firebaseConfig = { 
+// Your Firebase config
+const firebaseConfig = {
   apiKey: "AIzaSyA8GxsEaNuijjz1ZGmKJOBkfuAAf6N3czo",
   authDomain: "adhd-easy-mode.firebaseapp.com",
   projectId: "adhd-easy-mode",
@@ -13,46 +13,22 @@ const firebaseConfig = {
   measurementId: "G-2RC70GV6HS"
 };
 
-// Initialize Firebase app
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+export const messaging = getMessaging(app);
 
-// Initialize messaging
-const messaging = getMessaging(app);
-
-// --- Request notification permission and get FCM token ---
+// Request permission and get FCM token
 export async function requestFirebasePermission() {
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      console.log('Notification permission granted.');
-
-      const currentToken = await getToken(messaging, {
-        vapidKey: 'BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0'
-      });
-
-      if (currentToken) {
-        console.log('FCM Token:', currentToken);
-        // You can send this token to your server to send push messages later
-      } else {
-        console.log('No registration token available. Request permission to generate one.');
-      }
+      const token = await getToken(messaging, { vapidKey: "YOUR_PUBLIC_VAPID_KEY_HERE" });
+      console.log("FCM Token:", token);
+      // Send token to your server if you want to schedule messages from Firebase
     } else {
-      console.log('Notification permission denied.');
+      console.warn("Notification permission not granted.");
     }
   } catch (err) {
-    console.error('An error occurred while requesting notification permission:', err);
+    console.error("FCM permission error:", err);
   }
 }
-
-// --- Listen for messages while the page is in the foreground ---
-onMessage(messaging, (payload) => {
-  console.log('Message received in foreground:', payload);
-  if (Notification.permission === 'granted') {
-    new Notification(payload.notification.title, {
-      body: payload.notification.body,
-      icon: '/icons/icon-192x192.png'
-    });
-  }
-});
-
-export { messaging };
