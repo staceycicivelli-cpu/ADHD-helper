@@ -11,8 +11,28 @@ let notificationTimes = [
 
 let scheduledTimeouts = [];
 
+// Request notification permission
+async function requestNotificationPermission() {
+  if (!('Notification' in window)) {
+    alert('This browser does not support notifications.');
+    return false;
+  }
+
+  let permission = Notification.permission;
+
+  if (permission === 'granted') return true;
+  if (permission === 'denied') {
+    alert('Notifications blocked. Enable them in your browser settings.');
+    return false;
+  }
+
+  permission = await Notification.requestPermission();
+  return permission === 'granted';
+}
+
 // Initialize notifications on page load
 async function initNotifications() {
+  // Register Service Worker
   if ('serviceWorker' in navigator) {
     try {
       await navigator.serviceWorker.register('/firebase-messaging-sw.js');
@@ -22,7 +42,9 @@ async function initNotifications() {
     }
   }
 
-  await requestFirebasePermission();
+  const granted = await requestNotificationPermission();
+  if (!granted) return;
+
   scheduleAllNotifications();
 }
 
@@ -56,13 +78,13 @@ function scheduleNotification(hour, minute, index) {
   scheduledTimeouts[index] = timeoutId;
 }
 
-// Send notification
+// Send a local notification
 function sendLocalNotification(index) {
   if (Notification.permission === 'granted') {
     navigator.serviceWorker.ready.then(registration => {
       registration.showNotification("Hey friend!", {
         body: "Need any help?",
-        icon: '/icons/icon-192.png',
+        icon: '/icons/icon-192x192.png',
         badge: '/icons/badge-72.png',
         vibrate: [100, 50, 100],
         tag: `reminder-${index}`
@@ -78,35 +100,25 @@ function snoozeNotification(index) {
   scheduledTimeouts[index] = setTimeout(() => sendLocalNotification(index), 60 * 60 * 1000);
 }
 
-// Hook up snooze buttons and time inputs if you have them
-document.querySelectorAll('.notif-time-input').forEach((input, i) => {
-  input.value = `${notificationTimes[i].hour.toString().padStart(2, '0')}:${notificationTimes[i].minute.toString().padStart(2, '0')}`;
-  input.addEventListener('change', () => {
-    const [h, m] = input.value.split(':').map(Number);
-    notificationTimes[i] = { hour: h, minute: m };
-    scheduleAllNotifications();
-  });
-});
+// Setup Test Notification button
+document.addEventListener('DOMContentLoaded', () => {
+  const testBtn = document.getElementById('testNotifBtn');
+  if (testBtn) {
+    testBtn.addEventListener('click', async () => {
+      const granted = await requestNotificationPermission();
+      if (!granted) return;
 
-document.querySelectorAll('.snooze-btn').forEach((btn, i) => {
-  btn.addEventListener('click', () => snoozeNotification(i));
-});
-
-// Start everything
-initNotifications();
-
-document.getElementById('testNotifBtn').addEventListener('click', async () => {
-  if (Notification.permission !== 'granted') {
-    alert('You must allow notifications first!');
-    return;
+      const registration = await navigator.serviceWorker.ready;
+      registration.showNotification("Hey friend!", {
+        body: "Need any help?",
+        icon: '/icons/icon-192x192.png',
+        badge: '/icons/badge-72.png',
+        vibrate: [100, 50, 100],
+        tag: 'test-notification'
+      });
+    });
   }
 
-  const registration = await navigator.serviceWorker.ready;
-  registration.showNotification("Hey friend!", {
-    body: "Need any help?",
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/badge-72x72.png',
-    vibrate: [100, 50, 100],
-    tag: 'test-notification'
-  });
+  // Start notifications after DOM is ready
+  initNotifications();
 });
