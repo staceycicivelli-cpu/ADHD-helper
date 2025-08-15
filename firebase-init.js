@@ -22,7 +22,7 @@ export async function requestFirebasePermission() {
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      const token = await getToken(messaging, { vapidKey: "YOUR_PUBLIC_VAPID_KEY_HERE" });
+      const token = await getToken(messaging, { vapidKey: "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0" });
       console.log("FCM Token:", token);
       // Send token to your server if you want to schedule messages from Firebase
     } else {
@@ -32,3 +32,4 @@ export async function requestFirebasePermission() {
     console.error("FCM permission error:", err);
   }
 }
+
