@@ -14,20 +14,43 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
-async function requestFirebasePermission() {
-  const permission = await Notification.requestPermission();
-  if (permission === 'granted') {
-    const token = await getToken(messaging, {
-  vapidKey: "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0",
-  serviceWorkerRegistration: await navigator.serviceWorker.register("./firebase-messaging-sw.js"),
-});
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/ADHD-helper/firebase-messaging-sw.js")
+    .then((registration) => {
+      console.log("Service Worker registered with scope:", registration.scope);
+    })
+    .catch((err) => {
+      console.error("Service Worker registration failed:", err);
+    });
+}
 
-    console.log("FCM token:", token);
-    alert("FCM token generated! Check console to copy it.");
-  } else {
-    alert("Notifications permission denied");
+export async function requestFirebasePermission() {
+  console.log("Requesting notification permission...");
+  try {
+    const token = await getToken(messaging, {
+      vapidKey: "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0", // paste your real VAPID key here
+      serviceWorkerRegistration: await navigator.serviceWorker.ready,
+    });
+
+    if (token) {
+      console.log("FCM Token:", token);
+      alert("Notification permission granted! Token in console.");
+      // send token to your backend if you want to store it
+    } else {
+      console.log("No registration token available. Request permission to generate one.");
+    }
+  } catch (error) {
+    console.error("Error retrieving token:", error);
   }
 }
 
-requestFirebasePermission();
+// Handle foreground messages
+onMessage(messaging, (payload) => {
+  console.log("Message received in foreground:", payload);
+  alert("New notification: " + (payload.notification?.title || "No title"));
+});
+
+// Attach function to button
+document.getElementById("notify-btn").addEventListener("click", requestFirebasePermission);
 
