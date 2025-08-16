@@ -1,56 +1,75 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js';
-import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js';
+import { messaging, onMessage, requestFirebasePermission } from '/ADHD-helper/firebase-init.js';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA8GxsEaNuijjz1ZGmKJOBkfuAAf6N3czo",
-  authDomain: "adhd-easy-mode.firebaseapp.com",
-  projectId: "adhd-easy-mode",
-  storageBucket: "adhd-easy-mode.appspot.com",
-  messagingSenderId: "549461875846",
-  appId: "1:549461875846:web:a671b543824fd8439c0507",
-  measurementId: "G-2RC70GV6HS"
-};
+// Default notification times (for local scheduling if needed)
+let notificationTimes = [
+  { hour: 8, minute: 0 },
+  { hour: 13, minute: 0 },
+  { hour: 18, minute: 0 },
+  { hour: 21, minute: 0 } // 9 PM
+];
 
-const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
+let scheduledTimeouts = [];
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-    .register("/ADHD-helper/firebase-messaging-sw.js")
-    .then((registration) => {
-      console.log("Service Worker registered with scope:", registration.scope);
-    })
-    .catch((err) => {
-      console.error("Service Worker registration failed:", err);
-    });
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/ADHD-helper/firebase-messaging-sw.js')
+    .then((reg) => console.log("Service Worker registered with scope:", reg.scope))
+    .catch((err) => console.error("Service Worker registration failed:", err));
 }
 
-export async function requestFirebasePermission() {
-  console.log("Requesting notification permission...");
-  try {
-    const token = await getToken(messaging, {
-      vapidKey: "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0", // paste your real VAPID key here
-      serviceWorkerRegistration: await navigator.serviceWorker.ready,
-    });
+// Initialize notifications
+async function initNotifications() {
+  await requestFirebasePermission();
+  scheduleAllNotifications();
+}
 
-    if (token) {
-      console.log("FCM Token:", token);
-      alert("Notification permission granted! Token in console.");
-      // send token to your backend if you want to store it
-    } else {
-      console.log("No registration token available. Request permission to generate one.");
-    }
-  } catch (error) {
-    console.error("Error retrieving token:", error);
+// Optional local notification scheduling
+function scheduleAllNotifications() {
+  scheduledTimeouts.forEach(t => { clearTimeout(t); clearInterval(t); });
+  scheduledTimeouts = [];
+
+  notificationTimes.forEach((time, i) => scheduleNotification(time.hour, time.minute, i));
+}
+
+function scheduleNotification(hour, minute, index) {
+  const now = new Date();
+  let next = new Date();
+  next.setHours(hour, minute, 0, 0);
+  if (now >= next) next.setDate(next.getDate() + 1);
+
+  const delay = next - now;
+
+  scheduledTimeouts[index] = setTimeout(() => {
+    sendLocalNotification(index);
+    scheduledTimeouts[index] = setInterval(() => sendLocalNotification(index), 24*60*60*1000);
+  }, delay);
+}
+
+function sendLocalNotification(index) {
+  if (Notification.permission === 'granted') {
+    navigator.serviceWorker.ready.then(registration => {
+      registration.showNotification("Hey friend!", {
+        body: "Need any help?",
+        icon: '/ADHD-helper/icons/icon-192.png',
+        badge: '/ADHD-helper/icons/badge-72.png',
+        vibrate: [100, 50, 100],
+        tag: `reminder-${index}`
+      });
+    });
   }
 }
 
-// Handle foreground messages
+// Handle foreground FCM messages
 onMessage(messaging, (payload) => {
-  console.log("Message received in foreground:", payload);
-  alert("New notification: " + (payload.notification?.title || "No title"));
+  console.log("Foreground message received:", payload);
+  alert(payload.notification?.title + "\n" + payload.notification?.body);
 });
 
-// Attach function to button
-document.getElementById("notify-btn").addEventListener("click", requestFirebasePermission);
+// Optional: attach to a button
+const notifyBtn = document.getElementById("notify-btn");
+if (notifyBtn) {
+  notifyBtn.addEventListener("click", requestFirebasePermission);
+}
 
+// Start everything
+initNotifications();
