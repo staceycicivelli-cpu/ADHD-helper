@@ -1,8 +1,8 @@
 // firebase-init.js
-import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+import { getMessaging } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-messaging.js";
 
-// Your web app's Firebase configuration
+// Your Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyA8GxsEaNuijjz1ZGmKJOBkfuAAf6N3czo",
   authDomain: "adhd-easy-mode.firebaseapp.com",
@@ -15,27 +15,4 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
-
-// Your public VAPID key from Firebase console
-const VAPID_KEY = "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0";
-
-// Request permission and get FCM token
-async function requestFirebasePermission() {
-  try {
-    const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
-      const token = await getToken(messaging, { vapidKey: BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0 });
-      console.log("FCM token:", token);
-      // You can send this token to your server here if needed
-      return token;
-    } else {
-      console.warn("Notification permission not granted.");
-    }
-  } catch (err) {
-    console.error("FCM token request failed:", err);
-  }
-}
-
-export { messaging, requestFirebasePermission };
-
+export const messaging = getMessaging(app);
