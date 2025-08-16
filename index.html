@@ -136,15 +136,18 @@
   </nav>
   <button id="testNotifBtn">Test Notification</button>
   <script type="module" src="landing-page.js"></script>
+<script type="module" src="./landing-page.js"></script>
 <script>
-  if ("serviceWorker" in navigator) {
+  if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register("firebase-messaging-sw.js")
-      .then((reg) => console.log("Service Worker registered", reg))
-      .catch((err) => console.error("Service Worker registration failed", err));
+      .then(reg => console.log("Service Worker registered", reg))
+      .catch(err => console.error("Service Worker registration failed", err));
   }
 </script>
+
 </body>
 </html>
+
 
 
 
