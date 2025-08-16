@@ -33,7 +33,7 @@ export async function requestFirebasePermission() {
     });
 
     console.log("FCM token:", token);
-    alert("Notification permission granted! Check console for token.");
+    alert("Notification permission granted!\nFCM Token:\n" + token);
     return token;
   } catch (err) {
     console.error("Error getting FCM token:", err);
@@ -43,4 +43,5 @@ export async function requestFirebasePermission() {
 
 // Properly export onMessage under the name fcmOnMessage
 export { messaging, fcmOnMessage };
+
 
