@@ -21,10 +21,11 @@ messaging.onBackgroundMessage(function(payload) {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: 'icons/icon-192x192.png', // relative path
+    icon: 'icons/icon-192.png', // relative path
     badge: 'icons/badge-72.png'
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
+
 
