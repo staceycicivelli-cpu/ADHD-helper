@@ -17,9 +17,11 @@ const messaging = getMessaging(app);
 async function requestFirebasePermission() {
   const permission = await Notification.requestPermission();
   if (permission === 'granted') {
-    const token = await getToken(messaging, { 
-      vapidKey: "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0" 
-    });
+    const token = await getToken(messaging, {
+  vapidKey: "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0",
+  serviceWorkerRegistration: await navigator.serviceWorker.register("./firebase-messaging-sw.js"),
+});
+
     console.log("FCM token:", token);
     alert("FCM token generated! Check console to copy it.");
   } else {
@@ -28,3 +30,4 @@ async function requestFirebasePermission() {
 }
 
 requestFirebasePermission();
+
