@@ -1,8 +1,8 @@
 // firebase-messaging-sw.js
-importScripts('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js');
+importScripts("https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js");
+importScripts("https://www.gstatic.com/firebasejs/9.6.11/firebase-messaging.js");
 
-const firebaseConfig = { 
+firebase.initializeApp({
   apiKey: "AIzaSyA8GxsEaNuijjz1ZGmKJOBkfuAAf6N3czo",
   authDomain: "adhd-easy-mode.firebaseapp.com",
   projectId: "adhd-easy-mode",
@@ -10,19 +10,15 @@ const firebaseConfig = {
   messagingSenderId: "549461875846",
   appId: "1:549461875846:web:a671b543824fd8439c0507",
   measurementId: "G-2RC70GV6HS"
-};
-
-firebase.initializeApp(firebaseConfig);
+});
 
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage(function(payload) {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
+// Background message handler
+messaging.onBackgroundMessage((payload) => {
+  console.log("Received background message:", payload);
+  self.registration.showNotification(payload.notification.title, {
     body: payload.notification.body,
-    icon: 'icons/icon-192.png'
-  };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
+    icon: payload.notification.icon
+  });
 });
