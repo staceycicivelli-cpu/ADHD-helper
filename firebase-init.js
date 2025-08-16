@@ -1,8 +1,7 @@
-// firebase-init.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
-import { getMessaging } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-messaging.js";
+// Firebase initialization and FCM setup
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js';
+import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js';
 
-// Your Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyA8GxsEaNuijjz1ZGmKJOBkfuAAf6N3czo",
   authDomain: "adhd-easy-mode.firebaseapp.com",
@@ -13,6 +12,34 @@ const firebaseConfig = {
   measurementId: "G-2RC70GV6HS"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const messaging = getMessaging(app);
+const messaging = getMessaging(app);
+
+// Request permission and get FCM token
+export async function requestFirebasePermission() {
+  console.log("Requesting notification permission...");
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      console.log("Notification permission denied");
+      return null;
+    }
+
+    const registration = await navigator.serviceWorker.ready;
+
+    const token = await getToken(messaging, {
+      vapidKey: "BNij1cN2k13LMGOOYqGXlBTJO7MyVkIoEik7PBZxpUIngIm3VnOMBEvoVF6Ed48reyq9UOtrT1A2MV96mEeUzK0",
+      serviceWorkerRegistration: registration
+    });
+
+    console.log("FCM token:", token);
+    alert("Notification permission granted! Check console for token.");
+    return token;
+  } catch (err) {
+    console.error("Error getting FCM token:", err);
+    return null;
+  }
+}
+
+// Handle foreground messages
+export { messaging, onMessage };
