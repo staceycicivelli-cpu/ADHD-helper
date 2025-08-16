@@ -1,6 +1,6 @@
 // Firebase initialization and FCM setup
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js';
-import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js';
+import { getMessaging, getToken, onMessage as fcmOnMessage } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA8GxsEaNuijjz1ZGmKJOBkfuAAf6N3czo",
@@ -41,5 +41,6 @@ export async function requestFirebasePermission() {
   }
 }
 
-// Handle foreground messages
-export { messaging, onMessage };
+// Properly export onMessage under the name fcmOnMessage
+export { messaging, fcmOnMessage };
+
